@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mes Recettes</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="notification" role="alert" aria-live="polite"></div>
+
+  <header>
+    <div class="header-inner">
+      <h1>Mes Recettes</h1>
+      <button id="add-recipe-btn" aria-label="Ajouter une nouvelle recette">+ Nouvelle recette</button>
+
+      <div class="controls">
+        <!-- Barre de recherche -->
+        <div class="search-bar-container">
+          <div class="search-wrapper">
+            <input type="text" id="search-title" placeholder="Rechercher par titre..." aria-label="Rechercher par titre">
+            <button class="clear-btn" id="clear-title" aria-label="Effacer le titre"></button>
+          </div>
+          <div class="search-wrapper">
+            <input type="text" id="search-ingredient" placeholder="Rechercher par ingrédient..." aria-label="Rechercher par ingrédient">
+            <button class="clear-btn" id="clear-ingredient" aria-label="Effacer les ingrédients"></button>
+          </div>
+        </div>
+
+        <!-- Filtres de catégorie -->
+        <div id="filters">
+          <button data-category="all" class="active">Toutes</button>
+          <button data-category="Plat">Plats</button>
+          <button data-category="Dessert">Desserts</button>
+          <button data-category="Entrée">Entrées</button>
+          <button data-category="Snack">Snacks</button>
+          <button data-category="Cocktail">Cocktails</button>
+        </div>
+
+        <!-- Boutons de tri -->
+        <div class="sort-controls">
+          <button data-sort="asc" class="sort-btn active">A→Z</button>
+          <button data-sort="desc" class="sort-btn">Z→A</button>
+        </div>
+      </div>
+
+      <p id="recipe-count"></p>
+    </div>
+  </header>
+
+  <main id="recipes-container"></main>
+
+  <div id="recipe-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-content">
+      <span class="close-btn" role="button" aria-label="Fermer la modale">&times;</span>
+      <h2 id="modal-title">Nouvelle recette</h2>
+      <form id="recipe-form">
+        <label for="title">Titre</label>
+        <input type="text" id="title" required>
+
+        <label for="category">Catégorie</label>
+        <select id="category" required>
+          <option value="Plat">Plat</option>
+          <option value="Dessert">Dessert</option>
+          <option value="Entrée">Entrée</option>
+          <option value="Snack">Snack</option>
+          <option value="Cocktail">Cocktail</option>
+        </select>
+
+        <label for="time">Temps</label>
+        <input type="text" id="time" required>
+
+        <label for="ingredients">Ingrédients (séparés par des virgules)</label>
+        <textarea id="ingredients" required></textarea>
+
+        <label for="description">Description</label>
+        <textarea id="description" required></textarea>
+
+        <label for="image">Image (URL, optionnelle)</label>
+        <input type="url" id="image" placeholder="https://exemple.com/image.jpg">
+
+        <button type="submit">Ajouter</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
