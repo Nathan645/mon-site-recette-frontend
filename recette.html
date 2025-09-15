@@ -86,9 +86,10 @@ const deleteModal = document.getElementById("delete-modal");
 const cancelDeleteBtn = document.getElementById("cancel-delete");
 const confirmDeleteBtn = document.getElementById("confirm-delete");
 
-let recipe;
+let recipe = null;
 
-function showNotification(message,type="success"){
+// --- Notifications ---
+function showNotification(message, type="success"){
   const notif=document.getElementById("notification");
   notif.textContent=message;
   notif.className="";
@@ -96,15 +97,16 @@ function showNotification(message,type="success"){
   setTimeout(()=>notif.classList.remove("show"),3000);
 }
 
-async function fetchRecipe(){
+// --- Charger la recette depuis le backend ---
+async function loadRecipe() {
   try {
-    const res = await fetch(`${API_URL}`);
-    const recipes = await res.json();
-    recipe = recipes.find(r=>r._id===id);
-    if(!recipe) return window.location.href="index.html";
+    const res = await fetch(`${API_URL}/${id}`);
+    if (!res.ok) throw new Error("Recette non trouvée");
+    recipe = await res.json();
     populateDetail();
-  } catch {
-    showNotification("Erreur serveur","error");
+  } catch(err) {
+    console.error(err);
+    window.location.href = "index.html";
   }
 }
 
@@ -122,24 +124,43 @@ function populateDetail(){
   document.getElementById("recipe-ingredients").innerHTML = Array.isArray(recipe.ingredients)? recipe.ingredients.map(i=>`<li>${i}</li>`).join("") : "";
 }
 
+// --- Retour ---
 backBtn.addEventListener("click", ()=>window.location.href="index.html");
 
+// --- Supprimer ---
+document.getElementById("delete-btn").addEventListener("click",()=>{ deleteModal.style.display="block"; });
+cancelDeleteBtn.addEventListener("click",()=>{ deleteModal.style.display="none"; });
+window.addEventListener("click",(e)=>{ if(e.target===deleteModal) deleteModal.style.display="none"; });
+
+confirmDeleteBtn.addEventListener("click", async ()=>{
+  try {
+    await fetch(`${API_URL}/${recipe._id}`, { method: "DELETE" });
+    showNotification("Recette supprimée","error");
+    deleteModal.style.display="none";
+    setTimeout(()=>window.location.href="index.html",500);
+  } catch(err){
+    console.error(err);
+    showNotification("Erreur lors de la suppression","error");
+  }
+});
+
+// --- Modifier ---
 document.getElementById("edit-btn").addEventListener("click",()=>{
   modal.style.display="block";
-  form.title.value=recipe.title;
-  form.category.value=recipe.category;
-  form.time.value=recipe.time;
-  form.ingredients.value=Array.isArray(recipe.ingredients)?recipe.ingredients.join(", "):"";
-  form.description.value=recipe.description;
-  form.image.value=recipe.image||"";
+  form.title.value = recipe.title;
+  form.category.value = recipe.category;
+  form.time.value = recipe.time;
+  form.ingredients.value = Array.isArray(recipe.ingredients)? recipe.ingredients.join(", "):"";
+  form.description.value = recipe.description;
+  form.image.value = recipe.image||"";
 });
 
 closeBtn.addEventListener("click",()=>modal.style.display="none");
 window.addEventListener("click",(e)=>{ if(e.target===modal) modal.style.display="none"; });
 
-form.addEventListener("submit", async e=>{
+form.addEventListener("submit", async (e)=>{
   e.preventDefault();
-  const updated = {
+  const updatedRecipe = {
     title: form.title.value,
     category: form.category.value,
     time: form.time.value,
@@ -147,39 +168,26 @@ form.addEventListener("submit", async e=>{
     description: form.description.value,
     image: form.image.value||""
   };
-  try{
-    const res = await fetch(`${API_URL}/${id}`,{
-      method:"PUT",
-      headers:{"Content-Type":"application/json"},
-      body: JSON.stringify(updated)
+
+  try {
+    const res = await fetch(`${API_URL}/${recipe._id}`, {
+      method: "PUT",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(updatedRecipe)
     });
-    if(!res.ok) throw new Error();
     recipe = await res.json();
     populateDetail();
     modal.style.display="none";
-    showNotification("Recette modifiée","success");
-  }catch{
+    showNotification("Recette modifiée","warning");
+  } catch(err){
+    console.error(err);
     showNotification("Erreur lors de la modification","error");
   }
 });
 
-// Suppression
-document.getElementById("delete-btn").addEventListener("click",()=>deleteModal.style.display="block");
-cancelDeleteBtn.addEventListener("click",()=>deleteModal.style.display="none");
-confirmDeleteBtn.addEventListener("click", async ()=>{
-  try{
-    const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-    if(!res.ok) throw new Error();
-    deleteModal.style.display="none";
-    showNotification("Recette supprimée","success");
-    setTimeout(()=>window.location.href="index.html",500);
-  }catch{
-    showNotification("Erreur lors de la suppression","error");
-  }
-});
-window.addEventListener("click",(e)=>{ if(e.target===deleteModal) deleteModal.style.display="none"; });
-
-fetchRecipe();
+// --- Charger la recette au démarrage ---
+loadRecipe();
   </script>
 </body>
 </html>
+
