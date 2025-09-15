@@ -1,4 +1,3 @@
-// script.js
 const API_URL = "https://mon-site-recette-backend.onrender.com/recipes";
 
 const recipesContainer = document.getElementById("recipes-container");
@@ -10,7 +9,6 @@ const filters = document.querySelectorAll("#filters button");
 const recipeCount = document.getElementById("recipe-count");
 const sortButtons = document.querySelectorAll(".sort-btn");
 
-// --- Notification ---
 function showNotification(message, type = "success") {
   const notif = document.getElementById("notification");
   notif.textContent = message;
@@ -19,7 +17,7 @@ function showNotification(message, type = "success") {
   setTimeout(() => notif.classList.remove("show"), 3000);
 }
 
-// --- Afficher les recettes ---
+// Afficher les recettes
 function renderRecipes(recipes) {
   recipesContainer.innerHTML = "";
   recipes.forEach(recipe => {
@@ -43,23 +41,12 @@ function renderRecipes(recipes) {
   recipeCount.textContent = `${recipes.length} recette(s) trouvée(s)`;
 }
 
-// --- Récupérer toutes les recettes depuis le backend ---
-async function fetchRecipes() {
-  try {
-    const response = await fetch(API_URL);
-    const recipes = await response.json();
-    renderRecipes(recipes);
-  } catch (err) {
-    console.error("Erreur lors de la récupération des recettes :", err);
-  }
-}
-
-// --- Ajouter une recette ---
+// Ajouter recette
 addRecipeBtn.addEventListener("click", () => modal.style.display = "block");
 closeBtn.addEventListener("click", () => modal.style.display = "none");
 window.addEventListener("click", e => { if(e.target === modal) modal.style.display = "none"; });
 
-form.addEventListener("submit", async (e) => {
+form.addEventListener("submit", async e => {
   e.preventDefault();
   const newRecipe = {
     title: form.title.value,
@@ -71,99 +58,66 @@ form.addEventListener("submit", async (e) => {
   };
 
   try {
-    await fetch(API_URL, {
+    const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newRecipe)
     });
-    showNotification("Recette ajoutée !");
+    if(!res.ok) throw new Error();
     form.reset();
     modal.style.display = "none";
-    fetchRecipes();
-  } catch (err) {
-    console.error("Erreur lors de l'ajout :", err);
+    showNotification("Recette ajoutée !");
+    filterRecipes();
+  } catch {
     showNotification("Erreur lors de l'ajout", "error");
   }
 });
 
-// --- Filtrer par catégorie ---
-filters.forEach(btn => {
-  btn.addEventListener("click", async () => {
-    filters.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    try {
-      const response = await fetch(API_URL);
-      let recipes = await response.json();
-      const category = btn.dataset.category;
-      if(category !== "all") {
-        recipes = recipes.filter(r => r.category === category);
-      }
-      renderRecipes(recipes);
-    } catch (err) {
-      console.error(err);
-    }
-  });
-});
+// Filtrage optimisé côté backend
+function filterRecipes() {
+  const category = document.querySelector("#filters button.active").dataset.category;
+  const title = document.getElementById("search-title").value;
+  const ingredient = document.getElementById("search-ingredient").value;
 
-// --- Trier par titre ---
-sortButtons.forEach(btn => {
-  btn.addEventListener("click", async () => {
-    sortButtons.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    try {
-      const response = await fetch(API_URL);
-      let recipes = await response.json();
-      const order = btn.dataset.sort;
-      recipes.sort((a, b) => order === "asc" ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title));
-      renderRecipes(recipes);
-    } catch (err) {
-      console.error(err);
-    }
-  });
-});
+  const params = new URLSearchParams();
+  if(category) params.append("category", category);
+  if(title) params.append("title", title);
+  if(ingredient) params.append("ingredient", ingredient);
 
-// --- Recherche par titre et ingrédient ---
-function setupSearch() {
-  const titleInput = document.getElementById("search-title");
-  const ingredientInput = document.getElementById("search-ingredient");
-  const clearTitleBtn = document.getElementById("clear-title");
-  const clearIngredientBtn = document.getElementById("clear-ingredient");
-
-  async function filterRecipes() {
-    try {
-      const response = await fetch(API_URL);
-      let recipes = await response.json();
-      const title = titleInput.value.toLowerCase();
-      const ingredient = ingredientInput.value.toLowerCase();
-      recipes = recipes.filter(r =>
-        r.title.toLowerCase().includes(title) &&
-        r.ingredients.some(i => i.toLowerCase().includes(ingredient))
-      );
-      renderRecipes(recipes);
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  titleInput.addEventListener("input", () => {
-    clearTitleBtn.classList.toggle("show", titleInput.value.length > 0);
-    filterRecipes();
-  });
-  ingredientInput.addEventListener("input", () => {
-    clearIngredientBtn.classList.toggle("show", ingredientInput.value.length > 0);
-    filterRecipes();
-  });
-  clearTitleBtn.addEventListener("click", () => {
-    titleInput.value = "";
-    clearTitleBtn.classList.remove("show");
-    filterRecipes();
-  });
-  clearIngredientBtn.addEventListener("click", () => {
-    ingredientInput.value = "";
-    clearIngredientBtn.classList.remove("show");
-    filterRecipes();
-  });
+  fetch(`${API_URL}?${params.toString()}`)
+    .then(res => res.json())
+    .then(data => renderRecipes(data));
 }
 
-setupSearch();
-fetchRecipes();
+// Gestion des filtres
+filters.forEach(btn => btn.addEventListener("click", () => {
+  filters.forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  filterRecipes();
+}));
+
+// Recherche
+const titleInput = document.getElementById("search-title");
+const ingredientInput = document.getElementById("search-ingredient");
+const clearTitleBtn = document.getElementById("clear-title");
+const clearIngredientBtn = document.getElementById("clear-ingredient");
+
+[titleInput, ingredientInput].forEach(input => input.addEventListener("input", filterRecipes));
+
+clearTitleBtn.addEventListener("click", () => { titleInput.value=""; filterRecipes(); });
+clearIngredientBtn.addEventListener("click", () => { ingredientInput.value=""; filterRecipes(); });
+
+// Tri
+sortButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    sortButtons.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    const order = btn.dataset.sort;
+    const recipes = Array.from(recipesContainer.children).map(card => card.dataset.id);
+    recipes.sort((a,b) => order==="asc"? a.localeCompare(b): b.localeCompare(a));
+    filterRecipes();
+  });
+});
+
+// Initial render
+filterRecipes();
