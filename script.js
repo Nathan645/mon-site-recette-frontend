@@ -6,17 +6,14 @@ const modal = document.getElementById("recipe-modal");
 const closeBtn = document.querySelector(".close-btn");
 const form = document.getElementById("recipe-form");
 const filters = document.querySelectorAll("#filters button");
-const favoriteFilterBtn = document.getElementById("filter-favorite");
 const recipeCount = document.getElementById("recipe-count");
 const sortButtons = document.querySelectorAll(".sort-btn");
+const favoriteFilterBtn = document.getElementById("filter-favorite");
 
 const titleInput = document.getElementById("search-title");
 const ingredientInput = document.getElementById("search-ingredient");
 const clearTitleBtn = document.getElementById("clear-title");
 const clearIngredientBtn = document.getElementById("clear-ingredient");
-
-const modalFavoriteIcon = document.getElementById("modal-favorite-icon");
-const favoriteCheckbox = document.getElementById("favorite-checkbox");
 
 let allRecipes = [];
 let currentCategory = "all";
@@ -66,15 +63,17 @@ function renderRecipes(recipes) {
   recipeCount.textContent = `${recipes.length} recette(s) trouvée(s)`;
 }
 
-// Appliquer filtres et tri
+// Filtres et tri
 function applyFiltersAndRender() {
   let filtered = [...allRecipes];
+
   if (currentCategory !== "all") filtered = filtered.filter(r => r.category === currentCategory);
   if (currentTitle) filtered = filtered.filter(r => r.title.toLowerCase().includes(currentTitle));
   if (currentIngredient) filtered = filtered.filter(r => r.ingredients.some(i => i.toLowerCase().includes(currentIngredient)));
   if (filterFavorites) filtered = filtered.filter(r => r.favorite);
 
   filtered.sort((a, b) => currentSort === "asc" ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title));
+
   renderRecipes(filtered);
 }
 
@@ -85,22 +84,15 @@ async function fetchRecipes() {
     allRecipes = await response.json();
     applyFiltersAndRender();
   } catch (err) {
-    console.error("Erreur lors de la récupération des recettes :", err);
+    console.error("Erreur lors de la récupération :", err);
   }
 }
 
-// Modal ajout
+// Ajouter recette
 addRecipeBtn.addEventListener("click", () => modal.style.display = "block");
 closeBtn.addEventListener("click", () => modal.style.display = "none");
 window.addEventListener("click", e => { if(e.target === modal) modal.style.display = "none"; });
 
-// Favori dans modal
-modalFavoriteIcon.addEventListener("click", () => {
-  favoriteCheckbox.checked = !favoriteCheckbox.checked;
-  modalFavoriteIcon.classList.toggle("active", favoriteCheckbox.checked);
-});
-
-// Ajouter recette
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const newRecipe = {
@@ -110,9 +102,8 @@ form.addEventListener("submit", async (e) => {
     ingredients: form.ingredients.value.split(",").map(i => i.trim()),
     description: form.description.value,
     image: form.image.value || "",
-    favorite: favoriteCheckbox.checked
+    favorite: document.getElementById("favorite-checkbox").checked
   };
-
   try {
     const res = await fetch(API_URL, {
       method: "POST",
@@ -123,12 +114,10 @@ form.addEventListener("submit", async (e) => {
     allRecipes.push(created);
     showNotification("Recette ajoutée !");
     form.reset();
-    favoriteCheckbox.checked = false;
-    modalFavoriteIcon.classList.remove("active");
     modal.style.display = "none";
     applyFiltersAndRender();
   } catch (err) {
-    console.error(err);
+    console.error("Erreur lors de l'ajout :", err);
     showNotification("Erreur lors de l'ajout", "error");
   }
 });
@@ -136,8 +125,8 @@ form.addEventListener("submit", async (e) => {
 // Filtres catégories
 filters.forEach(btn => {
   btn.addEventListener("click", () => {
-    if(btn.id === "filter-favorite") return; // skip favoris bouton
     filters.forEach(b => b.classList.remove("active"));
+    favoriteFilterBtn.classList.remove("active");
     btn.classList.add("active");
     currentCategory = btn.dataset.category;
     applyFiltersAndRender();
@@ -147,8 +136,9 @@ filters.forEach(btn => {
 // Filtre favoris
 favoriteFilterBtn.addEventListener("click", () => {
   filterFavorites = !filterFavorites;
-  favoriteFilterBtn.classList.toggle("active", filterFavorites);
+  favoriteFilterBtn.classList.toggle("active");
   filters.forEach(b => b.classList.remove("active"));
+  currentCategory = "all";
   applyFiltersAndRender();
 });
 
