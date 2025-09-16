@@ -15,7 +15,7 @@ const ingredientInput = document.getElementById("search-ingredient");
 const clearTitleBtn = document.getElementById("clear-title");
 const clearIngredientBtn = document.getElementById("clear-ingredient");
 
-// --- Toggle favori dans le modal d'ajout ---
+// --- Toggle favori dans le modal ---
 const modalFavoriteIcon = document.getElementById("modal-favorite-icon");
 const modalFavoriteCheckbox = document.getElementById("favorite-checkbox");
 
@@ -113,7 +113,7 @@ form.addEventListener("submit", async (e) => {
     ingredients: form.ingredients.value.split(",").map(i => i.trim()),
     description: form.description.value,
     image: form.image.value || "",
-    favorite: document.getElementById("favorite-checkbox").checked
+    favorite: modalFavoriteCheckbox.checked
   };
   try {
     const res = await fetch(API_URL, {
@@ -126,7 +126,7 @@ form.addEventListener("submit", async (e) => {
     showNotification("Recette ajoutée !");
     form.reset();
     modal.style.display = "none";
-    modalFavoriteIcon.classList.remove("active"); // reset étoile
+    modalFavoriteIcon.classList.remove("active");
     applyFiltersAndRender();
   } catch (err) {
     console.error("Erreur lors de l'ajout :", err);
@@ -138,26 +138,16 @@ form.addEventListener("submit", async (e) => {
 filters.forEach(btn => {
   btn.addEventListener("click", () => {
     filters.forEach(b => b.classList.remove("active"));
-    favoriteFilterBtn.classList.remove("active");
     btn.classList.add("active");
     currentCategory = btn.dataset.category;
-    filterFavorites = false;
     applyFiltersAndRender();
   });
 });
 
-// Filtre favoris
+// Filtre favoris (indépendant et combinable)
 favoriteFilterBtn.addEventListener("click", () => {
   filterFavorites = !filterFavorites;
-
-  if (filterFavorites) {
-    favoriteFilterBtn.classList.add("active");
-    filters.forEach(b => b.classList.remove("active"));
-    currentCategory = "all";
-  } else {
-    favoriteFilterBtn.classList.remove("active");
-  }
-
+  favoriteFilterBtn.classList.toggle("active");
   applyFiltersAndRender();
 });
 

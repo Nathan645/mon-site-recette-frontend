@@ -26,16 +26,15 @@ header { background:#ff7043; color:white; padding:20px; }
   transition:0.3s;
   font-size:15px;
 }
-#filters button.active, .sort-controls .sort-btn.active, #filter-favorite.active {
+#filters button.active, .sort-controls .sort-btn.active {
   background:white;
   color:#ff7043;
   font-weight:bold;
 }
-
-/* Style actif spécifique pour le bouton Favoris */
+/* Bouton Favoris actif/inactif, indépendant */
 #filter-favorite.active {
   background:white;
-  color:#ff5722;
+  color:#ff7043;
   font-weight:bold;
 }
 
@@ -73,6 +72,7 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 .modal-content form button { padding:10px 15px; border:none; background:#4CAF50; color:white; border-radius:5px; cursor:pointer; }
 .modal-content form button:hover { background:#45a049; }
 
+/* --- Toggle favori dans modal --- */
 .modal-favorite { display:flex; align-items:center; gap:10px; margin-bottom:15px; cursor:pointer; }
 .modal-favorite .favorite-icon { font-size:24px; color: grey; transition: color 0.3s; }
 .modal-favorite .favorite-icon.active { color: gold; }
