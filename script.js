@@ -1,6 +1,7 @@
-// script.js optimisé
+// URL de l'API
 const API_URL = "https://mon-site-recette-backend.onrender.com/recipes";
 
+// --- Éléments DOM ---
 const recipesContainer = document.getElementById("recipes-container");
 const addRecipeBtn = document.getElementById("add-recipe-btn");
 const modal = document.getElementById("recipe-modal");
@@ -9,7 +10,6 @@ const form = document.getElementById("recipe-form");
 const filters = document.querySelectorAll("#filters button");
 const recipeCount = document.getElementById("recipe-count");
 const sortButtons = document.querySelectorAll(".sort-btn");
-
 const titleInput = document.getElementById("search-title");
 const ingredientInput = document.getElementById("search-ingredient");
 const clearTitleBtn = document.getElementById("clear-title");
@@ -41,7 +41,7 @@ function renderRecipes(recipes) {
       const card = document.createElement("div");
       card.className = "recipe-card";
       card.innerHTML = `
-        ${recipe.image ? `<img src="${recipe.image}" alt="Image de ${recipe.title}">` : ""}
+        ${recipe.image ? `<img src="${recipe.image}" alt="Image de ${recipe.title}" loading="lazy">` : ""}
         <div class="card-content">
           <h2>${recipe.title}</h2>
           <p><strong>Catégorie :</strong> ${recipe.category}</p>
@@ -59,29 +59,25 @@ function renderRecipes(recipes) {
   recipeCount.textContent = `${recipes.length} recette(s) trouvée(s)`;
 }
 
-// --- Appliquer filtres + recherche + tri ---
+// --- Filtrage et tri ---
 function applyFiltersAndRender() {
   let filtered = [...allRecipes];
 
-  // Filtre catégorie
   if (currentFilter !== "all") {
     filtered = filtered.filter(r => r.category === currentFilter);
   }
 
-  // Recherche titre
   if (currentTitle) {
     filtered = filtered.filter(r => r.title.toLowerCase().includes(currentTitle));
   }
 
-  // Recherche ingrédient
   if (currentIngredient) {
-    filtered = filtered.filter(r => 
+    filtered = filtered.filter(r =>
       r.ingredients.some(i => i.toLowerCase().includes(currentIngredient))
     );
   }
 
-  // Tri
-  filtered.sort((a, b) => 
+  filtered.sort((a, b) =>
     currentSort === "asc"
       ? a.title.localeCompare(b.title)
       : b.title.localeCompare(a.title)
@@ -90,31 +86,39 @@ function applyFiltersAndRender() {
   renderRecipes(filtered);
 }
 
-// --- Récupérer toutes les recettes depuis le backend ---
+// --- Récupérer les recettes depuis le backend ---
 async function fetchRecipes() {
   try {
     const response = await fetch(API_URL);
+    if (!response.ok) throw new Error("Impossible de récupérer les recettes");
     allRecipes = await response.json();
     applyFiltersAndRender();
   } catch (err) {
-    console.error("Erreur lors de la récupération des recettes :", err);
+    console.error(err);
+    recipesContainer.innerHTML = `<p class="error">Erreur lors de la récupération des recettes.</p>`;
+    showNotification("Impossible de charger les recettes", "error");
   }
 }
 
-// --- Ajouter une recette ---
-addRecipeBtn.addEventListener("click", () => modal.style.display = "block");
-closeBtn.addEventListener("click", () => modal.style.display = "none");
-window.addEventListener("click", e => { if(e.target === modal) modal.style.display = "none"; });
+// --- Modal ajout/édition ---
+addRecipeBtn.addEventListener("click", () => {
+  modal.style.display = "block";
+  form.querySelector("input, textarea").focus();
+});
 
+closeBtn.addEventListener("click", () => modal.style.display = "none");
+window.addEventListener("click", e => { if (e.target === modal) modal.style.display = "none"; });
+
+// --- Ajouter recette ---
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const newRecipe = {
-    title: form.title.value,
+    title: form.title.value.trim(),
     category: form.category.value,
-    time: form.time.value,
-    ingredients: form.ingredients.value.split(",").map(i => i.trim()),
-    description: form.description.value,
-    image: form.image.value || ""
+    time: form.time.value.trim(),
+    ingredients: form.ingredients.value.split(",").map(i => i.trim()).filter(Boolean),
+    description: form.description.value.trim(),
+    image: form.image.value.trim() || ""
   };
 
   try {
@@ -123,19 +127,20 @@ form.addEventListener("submit", async (e) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newRecipe)
     });
+    if (!res.ok) throw new Error("Erreur serveur");
     const created = await res.json();
-    allRecipes.push(created); // ajouter localement
+    allRecipes.push(created);
     showNotification("Recette ajoutée !");
     form.reset();
     modal.style.display = "none";
     applyFiltersAndRender();
   } catch (err) {
-    console.error("Erreur lors de l'ajout :", err);
+    console.error(err);
     showNotification("Erreur lors de l'ajout", "error");
   }
 });
 
-// --- Filtrer par catégorie ---
+// --- Filtre par catégorie ---
 filters.forEach(btn => {
   btn.addEventListener("click", () => {
     filters.forEach(b => b.classList.remove("active"));
@@ -145,7 +150,7 @@ filters.forEach(btn => {
   });
 });
 
-// --- Trier par titre ---
+// --- Tri par titre ---
 sortButtons.forEach(btn => {
   btn.addEventListener("click", () => {
     sortButtons.forEach(b => b.classList.remove("active"));
@@ -155,23 +160,26 @@ sortButtons.forEach(btn => {
   });
 });
 
-// --- Recherche par titre et ingrédient ---
+// --- Recherche titre/ingrédients ---
 titleInput.addEventListener("input", () => {
   currentTitle = titleInput.value.toLowerCase();
   clearTitleBtn.classList.toggle("show", currentTitle.length > 0);
   applyFiltersAndRender();
 });
+
 ingredientInput.addEventListener("input", () => {
   currentIngredient = ingredientInput.value.toLowerCase();
   clearIngredientBtn.classList.toggle("show", currentIngredient.length > 0);
   applyFiltersAndRender();
 });
+
 clearTitleBtn.addEventListener("click", () => {
   titleInput.value = "";
   currentTitle = "";
   clearTitleBtn.classList.remove("show");
   applyFiltersAndRender();
 });
+
 clearIngredientBtn.addEventListener("click", () => {
   ingredientInput.value = "";
   currentIngredient = "";
@@ -179,5 +187,5 @@ clearIngredientBtn.addEventListener("click", () => {
   applyFiltersAndRender();
 });
 
-// --- Charger au démarrage ---
+// --- Initialisation ---
 fetchRecipes();

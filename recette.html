@@ -12,7 +12,7 @@
   <div class="detail-page">
     <button id="back-btn">← Retour</button>
     <h2 id="recipe-title"></h2>
-    <img id="recipe-image" src="" alt="Photo de la recette" style="display:none;">
+    <img id="recipe-image" src="" alt="Photo de la recette" style="display:none;" loading="lazy">
     <p><strong>Catégorie :</strong> <span id="recipe-category"></span></p>
     <p><strong>Temps :</strong> <span id="recipe-time"></span></p>
     <h3>Ingrédients :</h3>
@@ -26,7 +26,7 @@
     </div>
   </div>
 
-  <!-- Modal pour modifier la recette -->
+  <!-- Modal modification -->
   <div id="recipe-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal-content">
       <span class="close-btn" role="button" aria-label="Fermer la modale">&times;</span>
@@ -61,7 +61,7 @@
     </div>
   </div>
 
-  <!-- Modal de confirmation de suppression -->
+  <!-- Modal suppression -->
   <div id="delete-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="delete-title">
     <div class="modal-content">
       <h2 id="delete-title">Confirmer la suppression</h2>
@@ -97,7 +97,7 @@ function showNotification(message, type="success"){
   setTimeout(()=>notif.classList.remove("show"),3000);
 }
 
-// --- Charger la recette depuis le backend ---
+// --- Charger la recette ---
 async function loadRecipe() {
   try {
     const res = await fetch(`${API_URL}/${id}`);
@@ -118,6 +118,7 @@ function populateDetail(){
     imgEl.style.display="block"; 
     imgEl.alt=`Photo de ${recipe.title}`; 
   } else imgEl.style.display="none";
+
   document.getElementById("recipe-category").textContent = recipe.category;
   document.getElementById("recipe-time").textContent = recipe.time;
   document.getElementById("recipe-description").innerHTML = recipe.description.replace(/\n/g,"<br>");
@@ -185,9 +186,8 @@ form.addEventListener("submit", async (e)=>{
   }
 });
 
-// --- Charger la recette au démarrage ---
+// --- Charger au démarrage ---
 loadRecipe();
   </script>
 </body>
 </html>
-
