@@ -27,7 +27,7 @@
           </div>
         </div>
 
-        <!-- Filtres de catégorie -->
+        <!-- Filtres de catégorie + favoris -->
         <div id="filters">
           <button data-category="all" class="active">Toutes</button>
           <button data-category="Plat">Plats</button>
@@ -35,6 +35,7 @@
           <button data-category="Entrée">Entrées</button>
           <button data-category="Snack">Snacks</button>
           <button data-category="Cocktail">Cocktails</button>
+          <button data-category="favorite">Favoris</button>
         </div>
 
         <!-- Boutons de tri -->
@@ -50,7 +51,7 @@
 
   <main id="recipes-container"></main>
 
-  <!-- Modal ajout/édition -->
+  <!-- Modal pour ajouter une recette -->
   <div id="recipe-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal-content">
       <span class="close-btn" role="button" aria-label="Fermer la modale">&times;</span>
@@ -79,6 +80,13 @@
 
         <label for="image">Image (URL, optionnelle)</label>
         <input type="url" id="image" placeholder="https://exemple.com/image.jpg">
+
+        <div>
+          <label>
+            <input type="checkbox" id="favorite-checkbox">
+            Marquer comme favori
+          </label>
+        </div>
 
         <button type="submit">Ajouter</button>
       </form>

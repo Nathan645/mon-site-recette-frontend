@@ -11,8 +11,11 @@
 
   <div class="detail-page">
     <button id="back-btn">← Retour</button>
+    <div style="position: relative;">
+      <img id="recipe-image" src="" alt="Photo de la recette" style="display:none;">
+      <div id="favorite-icon" class="favorite-icon">⭐</div>
+    </div>
     <h2 id="recipe-title"></h2>
-    <img id="recipe-image" src="" alt="Photo de la recette" style="display:none;" loading="lazy">
     <p><strong>Catégorie :</strong> <span id="recipe-category"></span></p>
     <p><strong>Temps :</strong> <span id="recipe-time"></span></p>
     <h3>Ingrédients :</h3>
@@ -26,7 +29,7 @@
     </div>
   </div>
 
-  <!-- Modal modification -->
+  <!-- Modal pour modifier la recette -->
   <div id="recipe-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal-content">
       <span class="close-btn" role="button" aria-label="Fermer la modale">&times;</span>
@@ -56,12 +59,19 @@
         <label for="image">Image (URL, optionnelle)</label>
         <input type="url" id="image">
 
+        <div>
+          <label>
+            <input type="checkbox" id="favorite-checkbox">
+            Marquer comme favori
+          </label>
+        </div>
+
         <button type="submit">Modifier</button>
       </form>
     </div>
   </div>
 
-  <!-- Modal suppression -->
+  <!-- Modal de confirmation de suppression -->
   <div id="delete-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="delete-title">
     <div class="modal-content">
       <h2 id="delete-title">Confirmer la suppression</h2>
@@ -85,6 +95,9 @@ const form = document.getElementById("recipe-form");
 const deleteModal = document.getElementById("delete-modal");
 const cancelDeleteBtn = document.getElementById("cancel-delete");
 const confirmDeleteBtn = document.getElementById("confirm-delete");
+
+const favoriteIcon = document.getElementById("favorite-icon");
+const favoriteCheckbox = document.getElementById("favorite-checkbox");
 
 let recipe = null;
 
@@ -110,6 +123,7 @@ async function loadRecipe() {
   }
 }
 
+// --- Remplir la page ---
 function populateDetail(){
   document.getElementById("recipe-title").textContent = recipe.title;
   const imgEl = document.getElementById("recipe-image");
@@ -118,15 +132,32 @@ function populateDetail(){
     imgEl.style.display="block"; 
     imgEl.alt=`Photo de ${recipe.title}`; 
   } else imgEl.style.display="none";
-
   document.getElementById("recipe-category").textContent = recipe.category;
   document.getElementById("recipe-time").textContent = recipe.time;
   document.getElementById("recipe-description").innerHTML = recipe.description.replace(/\n/g,"<br>");
   document.getElementById("recipe-ingredients").innerHTML = Array.isArray(recipe.ingredients)? recipe.ingredients.map(i=>`<li>${i}</li>`).join("") : "";
+
+  favoriteIcon.classList.toggle("active", recipe.favorite);
+  favoriteCheckbox.checked = recipe.favorite;
 }
 
 // --- Retour ---
 backBtn.addEventListener("click", ()=>window.location.href="index.html");
+
+// --- Toggle favori sur la page ---
+favoriteIcon.addEventListener("click", async ()=>{
+  try{
+    const res = await fetch(`${API_URL}/${recipe._id}/favorite`, { method: "PUT" });
+    const updated = await res.json();
+    recipe.favorite = updated.favorite;
+    favoriteIcon.classList.toggle("active", updated.favorite);
+    favoriteCheckbox.checked = updated.favorite;
+    showNotification(updated.favorite ? "Recette ajoutée aux favoris" : "Retirée des favoris", "success");
+  } catch(err){
+    console.error(err);
+    showNotification("Erreur lors du changement de favori","error");
+  }
+});
 
 // --- Supprimer ---
 document.getElementById("delete-btn").addEventListener("click",()=>{ deleteModal.style.display="block"; });
@@ -154,6 +185,7 @@ document.getElementById("edit-btn").addEventListener("click",()=>{
   form.ingredients.value = Array.isArray(recipe.ingredients)? recipe.ingredients.join(", "):"";
   form.description.value = recipe.description;
   form.image.value = recipe.image||"";
+  favoriteCheckbox.checked = recipe.favorite;
 });
 
 closeBtn.addEventListener("click",()=>modal.style.display="none");
@@ -167,7 +199,8 @@ form.addEventListener("submit", async (e)=>{
     time: form.time.value,
     ingredients: form.ingredients.value.split(",").map(i=>i.trim()),
     description: form.description.value,
-    image: form.image.value||""
+    image: form.image.value||"",
+    favorite: favoriteCheckbox.checked
   };
 
   try {
@@ -186,7 +219,7 @@ form.addEventListener("submit", async (e)=>{
   }
 });
 
-// --- Charger au démarrage ---
+// --- Charger la recette au démarrage ---
 loadRecipe();
   </script>
 </body>
