@@ -81,7 +81,6 @@
     </div>
   </div>
 
-
   <script>
 const API_URL = "https://mon-site-recette-backend.onrender.com/recipes";
 const params = new URLSearchParams(window.location.search);
@@ -96,7 +95,7 @@ const cancelDeleteBtn = document.getElementById("cancel-delete");
 const confirmDeleteBtn = document.getElementById("confirm-delete");
 
 const favoriteIcon = document.getElementById("favorite-icon");
-const favoriteCheckbox = document.getElementById("favorite-checkbox");
+const modalFavoriteBtn = document.getElementById("modal-favorite-btn");
 
 let recipe = null;
 
@@ -137,7 +136,7 @@ function populateDetail(){
   document.getElementById("recipe-ingredients").innerHTML = Array.isArray(recipe.ingredients)? recipe.ingredients.map(i=>`<li>${i}</li>`).join("") : "";
 
   favoriteIcon.classList.toggle("active", recipe.favorite);
-  favoriteCheckbox.checked = recipe.favorite;
+  modalFavoriteBtn.classList.toggle("active", recipe.favorite);
 }
 
 // --- Retour ---
@@ -150,12 +149,17 @@ favoriteIcon.addEventListener("click", async ()=>{
     const updated = await res.json();
     recipe.favorite = updated.favorite;
     favoriteIcon.classList.toggle("active", updated.favorite);
-    favoriteCheckbox.checked = updated.favorite;
+    modalFavoriteBtn.classList.toggle("active", updated.favorite);
     showNotification(updated.favorite ? "Recette ajoutée aux favoris" : "Retirée des favoris", "success");
   } catch(err){
     console.error(err);
     showNotification("Erreur lors du changement de favori","error");
   }
+});
+
+// --- Toggle favoris modal ---
+modalFavoriteBtn.addEventListener("click", ()=>{
+  modalFavoriteBtn.classList.toggle("active");
 });
 
 // --- Supprimer ---
@@ -184,7 +188,7 @@ document.getElementById("edit-btn").addEventListener("click",()=>{
   form.ingredients.value = Array.isArray(recipe.ingredients)? recipe.ingredients.join(", "):"";
   form.description.value = recipe.description;
   form.image.value = recipe.image||"";
-  favoriteCheckbox.checked = recipe.favorite;
+  modalFavoriteBtn.classList.toggle("active", recipe.favorite);
 });
 
 closeBtn.addEventListener("click",()=>modal.style.display="none");
@@ -199,7 +203,7 @@ form.addEventListener("submit", async (e)=>{
     ingredients: form.ingredients.value.split(",").map(i=>i.trim()),
     description: form.description.value,
     image: form.image.value||"",
-    favorite: favoriteCheckbox.checked
+    favorite: modalFavoriteBtn.classList.contains("active")
   };
 
   try {
