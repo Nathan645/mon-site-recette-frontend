@@ -15,6 +15,17 @@ const ingredientInput = document.getElementById("search-ingredient");
 const clearTitleBtn = document.getElementById("clear-title");
 const clearIngredientBtn = document.getElementById("clear-ingredient");
 
+// --- Toggle favori dans le modal d'ajout ---
+const modalFavoriteIcon = document.getElementById("modal-favorite-icon");
+const modalFavoriteCheckbox = document.getElementById("favorite-checkbox");
+
+if (modalFavoriteIcon && modalFavoriteCheckbox) {
+  modalFavoriteIcon.addEventListener("click", () => {
+    modalFavoriteIcon.classList.toggle("active");
+    modalFavoriteCheckbox.checked = modalFavoriteIcon.classList.contains("active");
+  });
+}
+
 let allRecipes = [];
 let currentCategory = "all";
 let currentSort = "asc";
@@ -115,6 +126,7 @@ form.addEventListener("submit", async (e) => {
     showNotification("Recette ajoutée !");
     form.reset();
     modal.style.display = "none";
+    modalFavoriteIcon.classList.remove("active"); // reset étoile
     applyFiltersAndRender();
   } catch (err) {
     console.error("Erreur lors de l'ajout :", err);
@@ -129,6 +141,7 @@ filters.forEach(btn => {
     favoriteFilterBtn.classList.remove("active");
     btn.classList.add("active");
     currentCategory = btn.dataset.category;
+    filterFavorites = false;
     applyFiltersAndRender();
   });
 });
@@ -136,9 +149,15 @@ filters.forEach(btn => {
 // Filtre favoris
 favoriteFilterBtn.addEventListener("click", () => {
   filterFavorites = !filterFavorites;
-  favoriteFilterBtn.classList.toggle("active");
-  filters.forEach(b => b.classList.remove("active"));
-  currentCategory = "all";
+
+  if (filterFavorites) {
+    favoriteFilterBtn.classList.add("active");
+    filters.forEach(b => b.classList.remove("active"));
+    currentCategory = "all";
+  } else {
+    favoriteFilterBtn.classList.remove("active");
+  }
+
   applyFiltersAndRender();
 });
 
