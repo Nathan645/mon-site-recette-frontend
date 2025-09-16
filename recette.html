@@ -13,7 +13,7 @@
     <button id="back-btn">← Retour</button>
     <div style="position: relative;">
       <img id="recipe-image" src="" alt="Photo de la recette" style="display:none;">
-      <div id="favorite-icon" class="favorite-icon">⭐</div>
+      <div id="favorite-icon" class="card-favorite-icon"></div>
     </div>
     <h2 id="recipe-title"></h2>
     <p><strong>Catégorie :</strong> <span id="recipe-category"></span></p>
@@ -59,13 +59,11 @@
         <label for="image">Image (URL, optionnelle)</label>
         <input type="url" id="image">
 
-        <!-- Switch favoris -->
-        <div class="favorite-switch">
-          <label class="switch">
-            <input type="checkbox" id="favorite-checkbox">
-            <span class="slider"></span>
-          </label>
+        <!-- Étoile favori modal -->
+        <div class="modal-favorite">
+          <span id="modal-favorite-icon" class="favorite-icon">★</span>
           <span>Favori</span>
+          <input type="checkbox" id="favorite-checkbox" hidden>
         </div>
 
         <button type="submit">Modifier</button>
@@ -85,7 +83,7 @@
     </div>
   </div>
 
-  <script>
+<script>
 const API_URL = "https://mon-site-recette-backend.onrender.com/recipes";
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
@@ -100,6 +98,7 @@ const confirmDeleteBtn = document.getElementById("confirm-delete");
 
 const favoriteIcon = document.getElementById("favorite-icon");
 const favoriteCheckbox = document.getElementById("favorite-checkbox");
+const modalFavoriteIcon = document.getElementById("modal-favorite-icon");
 
 let recipe = null;
 
@@ -139,26 +138,22 @@ function populateDetail(){
   document.getElementById("recipe-description").innerHTML = recipe.description.replace(/\n/g,"<br>");
   document.getElementById("recipe-ingredients").innerHTML = Array.isArray(recipe.ingredients)? recipe.ingredients.map(i=>`<li>${i}</li>`).join("") : "";
 
+  // Afficher étoile page détail si favori
   favoriteIcon.style.display = recipe.favorite ? "block" : "none";
+  favoriteIcon.textContent = "★";
+
+  // Modal favoris
   favoriteCheckbox.checked = recipe.favorite;
+  modalFavoriteIcon.classList.toggle("active", recipe.favorite);
 }
 
 // --- Retour ---
 backBtn.addEventListener("click", ()=>window.location.href="index.html");
 
-// --- Toggle favori sur la page ---
-favoriteIcon.addEventListener("click", async ()=>{
-  try{
-    const res = await fetch(`${API_URL}/${recipe._id}/favorite`, { method: "PUT" });
-    const updated = await res.json();
-    recipe.favorite = updated.favorite;
-    favoriteIcon.style.display = updated.favorite ? "block" : "none";
-    favoriteCheckbox.checked = updated.favorite;
-    showNotification(updated.favorite ? "Recette ajoutée aux favoris" : "Retirée des favoris", "success");
-  } catch(err){
-    console.error(err);
-    showNotification("Erreur lors du changement de favori","error");
-  }
+// --- Toggle favori modal ---
+modalFavoriteIcon.addEventListener("click", () => {
+  favoriteCheckbox.checked = !favoriteCheckbox.checked;
+  modalFavoriteIcon.classList.toggle("active", favoriteCheckbox.checked);
 });
 
 // --- Supprimer ---
@@ -188,6 +183,7 @@ document.getElementById("edit-btn").addEventListener("click",()=>{
   form.description.value = recipe.description;
   form.image.value = recipe.image||"";
   favoriteCheckbox.checked = recipe.favorite;
+  modalFavoriteIcon.classList.toggle("active", recipe.favorite);
 });
 
 closeBtn.addEventListener("click",()=>modal.style.display="none");
@@ -223,6 +219,6 @@ form.addEventListener("submit", async (e)=>{
 
 // --- Charger la recette au démarrage ---
 loadRecipe();
-  </script>
+</script>
 </body>
 </html>

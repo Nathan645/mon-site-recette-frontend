@@ -16,7 +16,7 @@ header { background:#ff7043; color:white; padding:20px; }
 .clear-btn:hover { background:#ff7043; }
 
 #filters, .sort-controls { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:10px; }
-#filters button, .sort-controls .sort-btn {
+#filters button, .sort-controls .sort-btn, #favorite-filter button {
   padding:10px 14px;
   border:none;
   border-radius:5px;
@@ -26,7 +26,7 @@ header { background:#ff7043; color:white; padding:20px; }
   transition:0.3s;
   font-size:15px;
 }
-#filters button.active, .sort-controls .sort-btn.active {
+#filters button.active, .sort-controls .sort-btn.active, #favorite-filter button.active {
   background:white;
   color:#ff7043;
   font-weight:bold;
@@ -46,13 +46,12 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 .recipe-card .card-content ul { padding-left:20px; margin:0; }
 .recipe-card .card-content p { margin:5px 0; }
 
-/* --- Étoile favori sur carte --- */
-.recipe-card .favorite-icon {
-  pointer-events: none;
+/* --- Étoile favori sur carte et page détail --- */
+.recipe-card .favorite-icon, .card-favorite-icon {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 24px;
+  top:10px;
+  right:10px;
+  font-size:24px;
   color: gold;
 }
 
@@ -67,44 +66,21 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 .modal-content form button { padding:10px 15px; border:none; background:#4CAF50; color:white; border-radius:5px; cursor:pointer; }
 .modal-content form button:hover { background:#45a049; }
 
-/* --- Switch favoris dans modal --- */
-.favorite-switch {
+/* --- Modal favoris (étoile) --- */
+.modal-favorite {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   margin-bottom: 15px;
-}
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 40px;
-  height: 20px;
-}
-.switch input { display: none; }
-.slider {
-  position: absolute;
   cursor: pointer;
-  background-color: #ccc;
-  border-radius: 20px;
-  top: 0; left: 0; right: 0; bottom: 0;
-  transition: 0.4s;
 }
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 16px;
-  width: 16px;
-  left: 2px;
-  bottom: 2px;
-  background-color: white;
-  border-radius: 50%;
-  transition: 0.4s;
+.modal-favorite .favorite-icon {
+  font-size: 24px;
+  color: gold;
+  transition: transform 0.2s;
 }
-input:checked + .slider {
-  background-color: #ff7043;
-}
-input:checked + .slider:before {
-  transform: translateX(20px);
+.modal-favorite .favorite-icon.active {
+  transform: scale(1.3);
 }
 
 /* --- Detail page --- */

@@ -6,7 +6,7 @@ const modal = document.getElementById("recipe-modal");
 const closeBtn = document.querySelector(".close-btn");
 const form = document.getElementById("recipe-form");
 const filters = document.querySelectorAll("#filters button");
-const favoriteFilterBtn = document.getElementById("favorite-filter-btn");
+const favoriteFilterBtn = document.getElementById("filter-favorite");
 const recipeCount = document.getElementById("recipe-count");
 const sortButtons = document.querySelectorAll(".sort-btn");
 
@@ -41,6 +41,7 @@ function renderRecipes(recipes) {
       const card = document.createElement("div");
       card.className = "recipe-card";
 
+      // Étoile seulement si favori
       let favoriteHtml = recipe.favorite ? `<span class="favorite-icon">★</span>` : "";
 
       card.innerHTML = `
@@ -54,12 +55,9 @@ function renderRecipes(recipes) {
           <ul>${recipe.ingredients.map(i => `<li>${i}</li>`).join("")}</ul>
         </div>
       `;
-
-      // clic sur la carte
       card.addEventListener("click", () => {
         window.location.href = `recette.html?id=${recipe._id}`;
       });
-
       recipesContainer.appendChild(card);
     });
   }
@@ -70,10 +68,21 @@ function renderRecipes(recipes) {
 function applyFiltersAndRender() {
   let filtered = [...allRecipes];
 
-  if (currentCategory !== "all") filtered = filtered.filter(r => r.category === currentCategory);
-  if (currentTitle) filtered = filtered.filter(r => r.title.toLowerCase().includes(currentTitle));
-  if (currentIngredient) filtered = filtered.filter(r => r.ingredients.some(i => i.toLowerCase().includes(currentIngredient)));
-  if (filterFavorites) filtered = filtered.filter(r => r.favorite);
+  if (currentCategory !== "all") {
+    filtered = filtered.filter(r => r.category === currentCategory);
+  }
+
+  if (currentTitle) {
+    filtered = filtered.filter(r => r.title.toLowerCase().includes(currentTitle));
+  }
+
+  if (currentIngredient) {
+    filtered = filtered.filter(r => r.ingredients.some(i => i.toLowerCase().includes(currentIngredient)));
+  }
+
+  if (filterFavorites) {
+    filtered = filtered.filter(r => r.favorite);
+  }
 
   filtered.sort((a, b) =>
     currentSort === "asc" ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title)
@@ -128,21 +137,21 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-// --- Filtres catégories et favoris ---
+// --- Filtres catégories ---
 filters.forEach(btn => {
   btn.addEventListener("click", () => {
-    if (btn.id === "favorite-filter-btn") {
-      filterFavorites = !filterFavorites;
-      btn.classList.toggle("active", filterFavorites);
-    } else {
-      filters.forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      currentCategory = btn.dataset.category;
-      filterFavorites = false;
-      favoriteFilterBtn.classList.remove("active");
-    }
+    filters.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentCategory = btn.dataset.category;
     applyFiltersAndRender();
   });
+});
+
+// --- Filtre favoris ---
+favoriteFilterBtn.addEventListener("click", () => {
+  filterFavorites = !filterFavorites;
+  favoriteFilterBtn.classList.toggle("active", filterFavorites);
+  applyFiltersAndRender();
 });
 
 // --- Tri ---
