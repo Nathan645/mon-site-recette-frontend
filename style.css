@@ -52,11 +52,6 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
   top:10px;
   right:10px;
   font-size:24px;
-  color: #ccc;
-  cursor: pointer;
-  transition: color 0.3s;
-}
-.recipe-card .favorite-icon.active {
   color: gold;
 }
 
@@ -71,6 +66,18 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 .modal-content form button { padding:10px 15px; border:none; background:#4CAF50; color:white; border-radius:5px; cursor:pointer; }
 .modal-content form button:hover { background:#45a049; }
 
+.favorite-checkbox label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: normal;
+  margin-bottom: 15px;
+}
+.favorite-checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
 /* --- Detail page --- */
 .detail-page {
   max-width: 1000px;
@@ -80,28 +87,10 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
-
-.detail-page img {
-  width: 100%;
-  border-radius: 10px;
-  margin-bottom: 20px;
-}
-
+.detail-page img { width: 100%; border-radius: 10px; margin-bottom: 20px; }
 .detail-page h2, .detail-page h3 { margin-top: 15px; }
 
-#back-btn {
-  display: inline-block;
-  margin-bottom: 20px;
-  padding: 10px 18px;
-  background: #ff7043;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-  transition: background 0.3s, transform 0.2s;
-}
+#back-btn { display: inline-block; margin-bottom: 20px; padding: 10px 18px; background: #ff7043; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 3px 6px rgba(0,0,0,0.15); transition: background 0.3s, transform 0.2s; }
 #back-btn:hover { background: #f4511e; transform: scale(1.05); }
 
 .actions { display:flex; gap:10px; margin-top:20px; }
@@ -119,41 +108,8 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 #notification.error { background: #f44336; }
 
 /* --- Modal suppression --- */
-#delete-modal .actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
-}
-#cancel-delete {
-  background: #ccc;
-  color: black;
-  padding: 8px 15px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
+#delete-modal .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+#cancel-delete { background: #ccc; color: black; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; }
 #cancel-delete:hover { background: #bbb; }
-#confirm-delete {
-  background: #e57373;
-  color: white;
-  padding: 8px 15px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
+#confirm-delete { background: #e57373; color: white; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; }
 #confirm-delete:hover { background: #f44336; }
-
-/* --- Étoile favori dans modal --- */
-.favorite-icon {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 28px;
-  cursor: pointer;
-  transition: color 0.3s;
-  color: #ccc;
-}
-.favorite-icon.active {
-  color: gold;
-}

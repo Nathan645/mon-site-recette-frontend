@@ -27,7 +27,7 @@
           </div>
         </div>
 
-        <!-- Filtres de catégorie + favoris -->
+        <!-- Filtres de catégorie -->
         <div id="filters">
           <button data-category="all" class="active">Toutes</button>
           <button data-category="Plat">Plats</button>
@@ -35,7 +35,14 @@
           <button data-category="Entrée">Entrées</button>
           <button data-category="Snack">Snacks</button>
           <button data-category="Cocktail">Cocktails</button>
-          <button data-category="favorite">Favoris</button>
+        </div>
+
+        <!-- Filtre favoris -->
+        <div id="favorite-filter">
+          <label>
+            <input type="checkbox" id="filter-favorite">
+            Afficher seulement les favoris
+          </label>
         </div>
 
         <!-- Boutons de tri -->
@@ -81,10 +88,10 @@
         <label for="image">Image (URL, optionnelle)</label>
         <input type="url" id="image" placeholder="https://exemple.com/image.jpg">
 
-        <div>
+        <div class="favorite-checkbox">
           <label>
             <input type="checkbox" id="favorite-checkbox">
-            Marquer comme favori
+            Ajouter aux favoris
           </label>
         </div>
 
