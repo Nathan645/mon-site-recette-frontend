@@ -5,10 +5,10 @@ const addRecipeBtn = document.getElementById("add-recipe-btn");
 const modal = document.getElementById("recipe-modal");
 const closeBtn = document.querySelector(".close-btn");
 const form = document.getElementById("recipe-form");
-const filters = document.querySelectorAll("#filters button");
-const recipeCount = document.getElementById("recipe-count");
+const filters = document.querySelectorAll("#filters button[data-category]");
 const sortButtons = document.querySelectorAll(".sort-btn");
-const favoriteCheckbox = document.getElementById("filter-favorite");
+const favoriteBtn = document.getElementById("filter-favorite-btn");
+const recipeCount = document.getElementById("recipe-count");
 
 const titleInput = document.getElementById("search-title");
 const ingredientInput = document.getElementById("search-ingredient");
@@ -146,9 +146,10 @@ filters.forEach(btn => {
   });
 });
 
-// --- Filtre favoris ---
-favoriteCheckbox.addEventListener("change", () => {
-  filterFavorites = favoriteCheckbox.checked;
+// --- Toggle favoris ---
+favoriteBtn.addEventListener("click", () => {
+  filterFavorites = !filterFavorites;
+  favoriteBtn.classList.toggle("active", filterFavorites);
   applyFiltersAndRender();
 });
 
