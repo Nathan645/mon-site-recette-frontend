@@ -59,11 +59,9 @@
         <label for="image">Image (URL, optionnelle)</label>
         <input type="url" id="image">
 
-        <div>
-          <label>
-            <input type="checkbox" id="favorite-checkbox">
-            Marquer comme favori
-          </label>
+        <!-- Toggle favoris -->
+        <div class="favorite-toggle-container">
+          <button type="button" id="modal-favorite-btn" class="toggle-favorite">Favoris</button>
         </div>
 
         <button type="submit">Modifier</button>
@@ -82,6 +80,7 @@
       </div>
     </div>
   </div>
+
 
   <script>
 const API_URL = "https://mon-site-recette-backend.onrender.com/recipes";

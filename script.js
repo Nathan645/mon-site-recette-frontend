@@ -9,6 +9,7 @@ const filters = document.querySelectorAll("#filters button[data-category]");
 const sortButtons = document.querySelectorAll(".sort-btn");
 const favoriteBtn = document.getElementById("filter-favorite-btn");
 const recipeCount = document.getElementById("recipe-count");
+const modalFavoriteBtn = document.getElementById("modal-favorite-btn");
 
 const titleInput = document.getElementById("search-title");
 const ingredientInput = document.getElementById("search-ingredient");
@@ -21,6 +22,7 @@ let currentSort = "asc";
 let currentTitle = "";
 let currentIngredient = "";
 let filterFavorites = false;
+let modalFavorite = false;
 
 // --- Notification ---
 function showNotification(message, type = "success") {
@@ -102,9 +104,18 @@ async function fetchRecipes() {
 }
 
 // --- Ajouter une recette ---
-addRecipeBtn.addEventListener("click", () => modal.style.display = "block");
+addRecipeBtn.addEventListener("click", () => {
+  modal.style.display = "block";
+  modalFavorite = false;
+  modalFavoriteBtn.classList.remove("active");
+});
 closeBtn.addEventListener("click", () => modal.style.display = "none");
 window.addEventListener("click", e => { if(e.target === modal) modal.style.display = "none"; });
+
+modalFavoriteBtn.addEventListener("click", () => {
+  modalFavorite = !modalFavorite;
+  modalFavoriteBtn.classList.toggle("active", modalFavorite);
+});
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -115,7 +126,7 @@ form.addEventListener("submit", async (e) => {
     ingredients: form.ingredients.value.split(",").map(i => i.trim()),
     description: form.description.value,
     image: form.image.value || "",
-    favorite: document.getElementById("favorite-checkbox").checked
+    favorite: modalFavorite
   };
 
   try {

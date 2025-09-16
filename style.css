@@ -53,6 +53,7 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
   right:10px;
   font-size:24px;
   color: gold;
+  pointer-events: none;
 }
 
 /* --- Modal --- */
@@ -66,16 +67,25 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 .modal-content form button { padding:10px 15px; border:none; background:#4CAF50; color:white; border-radius:5px; cursor:pointer; }
 .modal-content form button:hover { background:#45a049; }
 
-.favorite-checkbox label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: normal;
+.favorite-toggle-container {
   margin-bottom: 15px;
 }
-.favorite-checkbox input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
+.toggle-favorite {
+  padding: 8px 12px;
+  background: rgba(0,0,0,0.1);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+.toggle-favorite.active {
+  background: #4CAF50;
+  color: white;
+}
+.toggle-favorite:hover {
+  background: #45a049;
+  color: white;
 }
 
 /* --- Detail page --- */
