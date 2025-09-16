@@ -48,12 +48,12 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 
 /* --- Étoile favori sur carte --- */
 .recipe-card .favorite-icon {
-  position: absolute;
-  top:10px;
-  right:10px;
-  font-size:24px;
-  color: gold;
   pointer-events: none;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  color: gold;
 }
 
 /* --- Modal --- */
@@ -67,25 +67,44 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 .modal-content form button { padding:10px 15px; border:none; background:#4CAF50; color:white; border-radius:5px; cursor:pointer; }
 .modal-content form button:hover { background:#45a049; }
 
-.favorite-toggle-container {
+/* --- Switch favoris dans modal --- */
+.favorite-switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin-bottom: 15px;
 }
-.toggle-favorite {
-  padding: 8px 12px;
-  background: rgba(0,0,0,0.1);
-  border: none;
-  border-radius: 6px;
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+.switch input { display: none; }
+.slider {
+  position: absolute;
   cursor: pointer;
-  font-weight: bold;
-  transition: 0.3s;
+  background-color: #ccc;
+  border-radius: 20px;
+  top: 0; left: 0; right: 0; bottom: 0;
+  transition: 0.4s;
 }
-.toggle-favorite.active {
-  background: #4CAF50;
-  color: white;
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.4s;
 }
-.toggle-favorite:hover {
-  background: #45a049;
-  color: white;
+input:checked + .slider {
+  background-color: #ff7043;
+}
+input:checked + .slider:before {
+  transform: translateX(20px);
 }
 
 /* --- Detail page --- */
