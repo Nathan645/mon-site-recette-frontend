@@ -16,7 +16,7 @@ header { background:#ff7043; color:white; padding:20px; }
 .clear-btn:hover { background:#ff7043; }
 
 #filters, .sort-controls { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:10px; }
-#filters button, .sort-controls .sort-btn, #favorite-filter button {
+#filters button, .sort-controls .sort-btn, #filter-favorite {
   padding:10px 14px;
   border:none;
   border-radius:5px;
@@ -26,7 +26,7 @@ header { background:#ff7043; color:white; padding:20px; }
   transition:0.3s;
   font-size:15px;
 }
-#filters button.active, .sort-controls .sort-btn.active, #favorite-filter button.active {
+#filters button.active, .sort-controls .sort-btn.active, #filter-favorite.active {
   background:white;
   color:#ff7043;
   font-weight:bold;
@@ -46,8 +46,8 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 .recipe-card .card-content ul { padding-left:20px; margin:0; }
 .recipe-card .card-content p { margin:5px 0; }
 
-/* --- Étoile favori sur carte et page détail --- */
-.recipe-card .favorite-icon, .card-favorite-icon {
+/* --- Étoile favori sur carte --- */
+.recipe-card .favorite-icon {
   position: absolute;
   top:10px;
   right:10px;
@@ -66,22 +66,9 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 .modal-content form button { padding:10px 15px; border:none; background:#4CAF50; color:white; border-radius:5px; cursor:pointer; }
 .modal-content form button:hover { background:#45a049; }
 
-/* --- Modal favoris (étoile) --- */
-.modal-favorite {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 15px;
-  cursor: pointer;
-}
-.modal-favorite .favorite-icon {
-  font-size: 24px;
-  color: gold;
-  transition: transform 0.2s;
-}
-.modal-favorite .favorite-icon.active {
-  transform: scale(1.3);
-}
+.modal-favorite { display:flex; align-items:center; gap:10px; margin-bottom:15px; cursor:pointer; }
+.modal-favorite .favorite-icon { font-size:24px; color: grey; transition: color 0.3s; }
+.modal-favorite .favorite-icon.active { color: gold; }
 
 /* --- Detail page --- */
 .detail-page {
@@ -104,6 +91,19 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 #edit-btn:hover { background:#ffa726; }
 #delete-btn { background:#e57373; color:white; }
 #delete-btn:hover { background:#f44336; }
+
+/* --- Étoile sur page détail --- */
+.detail-page .favorite-icon {
+  position: absolute;
+  top:10px;
+  right:10px;
+  font-size:24px;
+  color: grey;
+  transition: color 0.3s;
+}
+.detail-page .favorite-icon.active {
+  color: gold;
+}
 
 /* --- Notification --- */
 #notification { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); padding: 12px 20px; border-radius: 6px; font-weight: bold; color: white; box-shadow: 0 3px 6px rgba(0,0,0,0.15); opacity: 0; pointer-events: none; transition: opacity 0.5s ease, top 0.5s ease; z-index: 2000; }
