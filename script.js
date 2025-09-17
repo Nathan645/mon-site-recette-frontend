@@ -18,6 +18,13 @@ const clearIngredientBtn = document.getElementById("clear-ingredient");
 const modalFavoriteIcon = document.getElementById("modal-favorite-icon");
 const modalFavoriteCheckbox = document.getElementById("favorite-checkbox");
 
+const paginationContainer = document.createElement("div");
+paginationContainer.id = "pagination";
+paginationContainer.style.display = "flex";
+paginationContainer.style.justifyContent = "center";
+paginationContainer.style.marginTop = "20px";
+recipesContainer.parentNode.appendChild(paginationContainer);
+
 if (modalFavoriteIcon && modalFavoriteCheckbox) {
   modalFavoriteIcon.addEventListener("click", () => {
     modalFavoriteIcon.classList.toggle("active");
@@ -34,8 +41,7 @@ let filterFavorites = false;
 
 // --- Pagination ---
 let currentPage = 1;
-const recipesPerPage = 12; // nombre de cartes par page
-const paginationContainer = document.getElementById("pagination");
+const recipesPerPage = 6; // cartes par page
 
 function showNotification(message, type = "success") {
   const notif = document.getElementById("notification");
@@ -51,7 +57,6 @@ function renderRecipes(recipes) {
   if (recipes.length === 0) {
     recipesContainer.innerHTML = `<p>Aucune recette trouvée.</p>`;
   } else {
-    // Calculer les recettes à afficher sur la page actuelle
     const start = (currentPage - 1) * recipesPerPage;
     const end = start + recipesPerPage;
     const recipesToShow = recipes.slice(start, end);
@@ -59,7 +64,7 @@ function renderRecipes(recipes) {
     recipesToShow.forEach(recipe => {
       const card = document.createElement("div");
       card.className = "recipe-card";
-      let favoriteHtml = recipe.favorite ? `<span class="favorite-icon">★</span>` : "";
+      const favoriteHtml = recipe.favorite ? `<span class="favorite-icon">★</span>` : "";
       card.innerHTML = `
         ${recipe.image ? `<img src="${recipe.image}" alt="Image de ${recipe.title}">` : ""}
         ${favoriteHtml}
@@ -91,6 +96,7 @@ function renderPagination(totalRecipes) {
   for (let i = 1; i <= totalPages; i++) {
     const btn = document.createElement("button");
     btn.textContent = i;
+    btn.style.margin = "0 5px";
     btn.classList.toggle("active", i === currentPage);
     btn.addEventListener("click", () => {
       currentPage = i;
@@ -124,7 +130,6 @@ function applyFiltersAndRender() {
       break;
   }
 
-  // reset page si la page actuelle dépasse le nombre de pages
   const totalPages = Math.ceil(filtered.length / recipesPerPage);
   if (currentPage > totalPages) currentPage = totalPages || 1;
 
