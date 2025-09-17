@@ -125,15 +125,3 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 #cancel-delete:hover { background: #bbb; }
 #confirm-delete { background: #e57373; color: white; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; }
 #confirm-delete:hover { background: #f44336; }
-
-/* --- Flèches sur les boutons de tri --- */
-.sort-btn .arrow {
-  margin-left: 5px;
-  font-size: 12px;
-  transition: color 0.3s;
-}
-
-.sort-btn.active .arrow {
-  color: #ff7043;
-  font-weight: bold;
-}
