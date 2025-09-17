@@ -5,7 +5,7 @@ const addRecipeBtn = document.getElementById("add-recipe-btn");
 const modal = document.getElementById("recipe-modal");
 const closeBtn = document.querySelector(".close-btn");
 const form = document.getElementById("recipe-form");
-const filters = document.querySelectorAll("#filters button[data-category]");
+const filters = document.querySelectorAll("#filters button[data-category]"); // uniquement les catégories
 const recipeCount = document.getElementById("recipe-count");
 const sortButtons = document.querySelectorAll(".sort-btn");
 const favoriteFilterBtn = document.getElementById("filter-favorite");
@@ -75,11 +75,22 @@ function renderRecipes(recipes) {
 // Appliquer filtres et tri
 function applyFiltersAndRender() {
   let filtered = [...allRecipes];
-  if (currentCategory !== "all") filtered = filtered.filter(r => r.category === currentCategory);
-  if (currentTitle) filtered = filtered.filter(r => r.title.toLowerCase().includes(currentTitle));
-  if (currentIngredient) filtered = filtered.filter(r => r.ingredients.some(i => i.toLowerCase().includes(currentIngredient)));
-  if (filterFavorites) filtered = filtered.filter(r => r.favorite);
+
+  if (currentCategory !== "all") {
+    filtered = filtered.filter(r => r.category === currentCategory);
+  }
+  if (currentTitle) {
+    filtered = filtered.filter(r => r.title.toLowerCase().includes(currentTitle));
+  }
+  if (currentIngredient) {
+    filtered = filtered.filter(r => r.ingredients.some(i => i.toLowerCase().includes(currentIngredient)));
+  }
+  if (filterFavorites) {
+    filtered = filtered.filter(r => r.favorite);
+  }
+
   filtered.sort((a, b) => currentSort === "asc" ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title));
+
   renderRecipes(filtered);
 }
 
@@ -140,7 +151,7 @@ filters.forEach(btn => {
   });
 });
 
-// Filtre favoris indépendant
+// Filtre favoris indépendant et combinable
 favoriteFilterBtn.addEventListener("click", () => {
   filterFavorites = !filterFavorites;
   favoriteFilterBtn.classList.toggle("active");
