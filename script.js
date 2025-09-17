@@ -1,11 +1,12 @@
 const API_URL = "https://mon-site-recette-backend.onrender.com/recipes";
 
 const recipesContainer = document.getElementById("recipes-container");
+const paginationContainer = document.getElementById("pagination");
 const addRecipeBtn = document.getElementById("add-recipe-btn");
 const modal = document.getElementById("recipe-modal");
 const closeBtn = document.querySelector(".close-btn");
 const form = document.getElementById("recipe-form");
-const filters = document.querySelectorAll("#filters button[data-category]"); // uniquement les catégories
+const filters = document.querySelectorAll("#filters button[data-category]");
 const recipeCount = document.getElementById("recipe-count");
 const sortButtons = document.querySelectorAll(".sort-btn");
 const favoriteFilterBtn = document.getElementById("filter-favorite");
@@ -32,6 +33,10 @@ let currentSort = "asc";
 let currentTitle = "";
 let currentIngredient = "";
 let filterFavorites = false;
+
+// Pagination
+const RECIPES_PER_PAGE = 10;
+let currentPage = 1;
 
 // Notification
 function showNotification(message, type = "success") {
@@ -69,7 +74,26 @@ function renderRecipes(recipes) {
       recipesContainer.appendChild(card);
     });
   }
-  recipeCount.textContent = `${recipes.length} recette(s) trouvée(s)`;
+  recipeCount.textContent = `${recipes.length} recette(s) affichée(s)`;
+}
+
+// Afficher la pagination
+function renderPagination(totalRecipes) {
+  paginationContainer.innerHTML = "";
+  const totalPages = Math.ceil(totalRecipes / RECIPES_PER_PAGE);
+
+  if (totalPages <= 1) return;
+
+  for (let i = 1; i <= totalPages; i++) {
+    const btn = document.createElement("button");
+    btn.textContent = i;
+    btn.className = (i === currentPage) ? "active" : "";
+    btn.addEventListener("click", () => {
+      currentPage = i;
+      applyFiltersAndRender();
+    });
+    paginationContainer.appendChild(btn);
+  }
 }
 
 // Appliquer filtres et tri
@@ -90,14 +114,22 @@ function applyFiltersAndRender() {
   }
 
   // Tri
-  filtered.sort((a, b) => {
-    if (currentSort === "asc") return a.title.localeCompare(b.title);
-    if (currentSort === "desc") return b.title.localeCompare(a.title);
-    if (currentSort === "newest") return new Date(b.createdAt) - new Date(a.createdAt);
-    if (currentSort === "oldest") return new Date(a.createdAt) - new Date(b.createdAt);
-  });
+  if (currentSort === "asc") {
+    filtered.sort((a, b) => a.title.localeCompare(b.title));
+  } else if (currentSort === "desc") {
+    filtered.sort((a, b) => b.title.localeCompare(a.title));
+  } else if (currentSort === "newest") {
+    filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  } else if (currentSort === "oldest") {
+    filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+  }
 
-  renderRecipes(filtered);
+  // Pagination
+  const start = (currentPage - 1) * RECIPES_PER_PAGE;
+  const paginated = filtered.slice(start, start + RECIPES_PER_PAGE);
+
+  renderRecipes(paginated);
+  renderPagination(filtered.length);
 }
 
 // Récupérer toutes les recettes
@@ -105,6 +137,7 @@ async function fetchRecipes() {
   try {
     const response = await fetch(API_URL);
     allRecipes = await response.json();
+    currentPage = 1;
     applyFiltersAndRender();
   } catch (err) {
     console.error("Erreur lors de la récupération :", err);
@@ -135,11 +168,12 @@ form.addEventListener("submit", async (e) => {
       body: JSON.stringify(newRecipe)
     });
     const created = await res.json();
-    allRecipes.push(created);
+    allRecipes.unshift(created); // pour l'ordre "Plus récente"
     showNotification("Recette ajoutée !");
     form.reset();
     modal.style.display = "none";
     modalFavoriteIcon.classList.remove("active");
+    currentPage = 1;
     applyFiltersAndRender();
   } catch (err) {
     console.error("Erreur lors de l'ajout :", err);
@@ -153,14 +187,16 @@ filters.forEach(btn => {
     filters.forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     currentCategory = btn.dataset.category;
+    currentPage = 1;
     applyFiltersAndRender();
   });
 });
 
-// Filtre favoris indépendant et combinable
+// Filtre favoris
 favoriteFilterBtn.addEventListener("click", () => {
   filterFavorites = !filterFavorites;
   favoriteFilterBtn.classList.toggle("active");
+  currentPage = 1;
   applyFiltersAndRender();
 });
 
@@ -170,6 +206,7 @@ sortButtons.forEach(btn => {
     sortButtons.forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     currentSort = btn.dataset.sort;
+    currentPage = 1;
     applyFiltersAndRender();
   });
 });
@@ -178,23 +215,27 @@ sortButtons.forEach(btn => {
 titleInput.addEventListener("input", () => {
   currentTitle = titleInput.value.toLowerCase();
   clearTitleBtn.classList.toggle("show", currentTitle.length > 0);
+  currentPage = 1;
   applyFiltersAndRender();
 });
 ingredientInput.addEventListener("input", () => {
   currentIngredient = ingredientInput.value.toLowerCase();
   clearIngredientBtn.classList.toggle("show", currentIngredient.length > 0);
+  currentPage = 1;
   applyFiltersAndRender();
 });
 clearTitleBtn.addEventListener("click", () => {
   titleInput.value = "";
   currentTitle = "";
   clearTitleBtn.classList.remove("show");
+  currentPage = 1;
   applyFiltersAndRender();
 });
 clearIngredientBtn.addEventListener("click", () => {
   ingredientInput.value = "";
   currentIngredient = "";
   clearIngredientBtn.classList.remove("show");
+  currentPage = 1;
   applyFiltersAndRender();
 });
 
