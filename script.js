@@ -34,7 +34,7 @@ let filterFavorites = false;
 
 // --- Pagination ---
 let currentPage = 1;
-const recipesPerPage = 6; // nombre de cartes par page
+const recipesPerPage = 12; // nombre de cartes par page
 const paginationContainer = document.getElementById("pagination");
 
 function showNotification(message, type = "success") {
