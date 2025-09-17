@@ -31,7 +31,6 @@ header { background:#ff7043; color:white; padding:20px; }
   color:#ff7043;
   font-weight:bold;
 }
-/* Bouton Favoris actif/inactif, indépendant */
 #filter-favorite.active {
   background:white;
   color:#ff7043;
@@ -52,7 +51,6 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 .recipe-card .card-content ul { padding-left:20px; margin:0; }
 .recipe-card .card-content p { margin:5px 0; }
 
-/* --- Étoile favori sur carte --- */
 .recipe-card .favorite-icon {
   position: absolute;
   top:10px;
@@ -72,20 +70,12 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 .modal-content form button { padding:10px 15px; border:none; background:#4CAF50; color:white; border-radius:5px; cursor:pointer; }
 .modal-content form button:hover { background:#45a049; }
 
-/* --- Toggle favori dans modal --- */
 .modal-favorite { display:flex; align-items:center; gap:10px; margin-bottom:15px; cursor:pointer; }
 .modal-favorite .favorite-icon { font-size:24px; color: grey; transition: color 0.3s; }
 .modal-favorite .favorite-icon.active { color: gold; }
 
 /* --- Detail page --- */
-.detail-page {
-  max-width: 1000px;
-  margin: 20px auto;
-  padding: 20px;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
+.detail-page { max-width: 1000px; margin: 20px auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
 .detail-page img { width: 100%; border-radius: 10px; margin-bottom: 20px; }
 .detail-page h2, .detail-page h3 { margin-top: 15px; }
 
@@ -99,18 +89,8 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 #delete-btn { background:#e57373; color:white; }
 #delete-btn:hover { background:#f44336; }
 
-/* --- Étoile sur page détail --- */
-.detail-page .favorite-icon {
-  position: absolute;
-  top:10px;
-  right:10px;
-  font-size:24px;
-  color: grey;
-  transition: color 0.3s;
-}
-.detail-page .favorite-icon.active {
-  color: gold;
-}
+.detail-page .favorite-icon { position: absolute; top:10px; right:10px; font-size:24px; color: grey; transition: color 0.3s; }
+.detail-page .favorite-icon.active { color: gold; }
 
 /* --- Notification --- */
 #notification { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); padding: 12px 20px; border-radius: 6px; font-weight: bold; color: white; box-shadow: 0 3px 6px rgba(0,0,0,0.15); opacity: 0; pointer-events: none; transition: opacity 0.5s ease, top 0.5s ease; z-index: 2000; }
@@ -130,24 +110,30 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 #pagination {
   display: flex;
   justify-content: center;
-  margin: 20px 0;
   gap: 8px;
+  margin: 20px 0;
+  flex-wrap: wrap;
 }
+
 #pagination button {
   padding: 8px 12px;
   border: none;
   border-radius: 6px;
-  background: white;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  background: rgba(255,255,255,0.2);
+  color: #ff7043;
   cursor: pointer;
-  transition: 0.3s;
+  font-weight: bold;
+  transition: background 0.3s, color 0.3s;
 }
+
 #pagination button:hover {
   background: #ff7043;
   color: white;
 }
+
 #pagination button.active {
   background: #ff7043;
   color: white;
   font-weight: bold;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
 }
