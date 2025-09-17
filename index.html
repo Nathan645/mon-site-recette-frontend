@@ -15,7 +15,6 @@
     <button id="add-recipe-btn" aria-label="Ajouter une nouvelle recette">+ Nouvelle recette</button>
 
     <div class="controls">
-      <!-- Barre de recherche -->
       <div class="search-bar-container">
         <div class="search-wrapper">
           <input type="text" id="search-title" placeholder="Rechercher par titre..." aria-label="Rechercher par titre">
@@ -27,7 +26,6 @@
         </div>
       </div>
 
-      <!-- Filtres de catégorie -->
       <div id="filters">
         <button data-category="all" class="active">Toutes</button>
         <button data-category="Plat">Plats</button>
@@ -38,7 +36,6 @@
         <button id="filter-favorite">Favoris</button>
       </div>
 
-      <!-- Boutons de tri -->
       <div class="sort-controls">
         <button data-sort="asc" class="sort-btn active">A→Z</button>
         <button data-sort="desc" class="sort-btn">Z→A</button>
@@ -52,16 +49,16 @@
 <main id="recipes-container"></main>
 
 <!-- Modal pour ajouter une recette -->
-<div id="recipe-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+<div id="add-recipe-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal-content">
     <span class="close-btn" role="button" aria-label="Fermer la modale">&times;</span>
     <h2 id="modal-title">Nouvelle recette</h2>
-    <form id="recipe-form">
-      <label for="title">Titre</label>
-      <input type="text" id="title" required>
+    <form id="add-recipe-form">
+      <label for="add-title">Titre</label>
+      <input type="text" id="add-title" required>
 
-      <label for="category">Catégorie</label>
-      <select id="category" required>
+      <label for="add-category">Catégorie</label>
+      <select id="add-category" required>
         <option value="Plat">Plat</option>
         <option value="Dessert">Dessert</option>
         <option value="Entrée">Entrée</option>
@@ -69,22 +66,22 @@
         <option value="Cocktail">Cocktail</option>
       </select>
 
-      <label for="time">Temps</label>
-      <input type="text" id="time" required>
+      <label for="add-time">Temps</label>
+      <input type="text" id="add-time" required>
 
-      <label for="ingredients">Ingrédients (séparés par des virgules)</label>
-      <textarea id="ingredients" required></textarea>
+      <label for="add-ingredients">Ingrédients (séparés par des virgules)</label>
+      <textarea id="add-ingredients" required></textarea>
 
-      <label for="description">Description</label>
-      <textarea id="description" required></textarea>
+      <label for="add-description">Description</label>
+      <textarea id="add-description" required></textarea>
 
-      <label for="image">Image (URL, optionnelle)</label>
-      <input type="url" id="image" placeholder="https://exemple.com/image.jpg">
+      <label for="add-image">Image (URL, optionnelle)</label>
+      <input type="url" id="add-image" placeholder="https://exemple.com/image.jpg">
 
       <div class="modal-favorite">
-        <span id="modal-favorite-icon" class="favorite-icon">★</span>
+        <span id="add-modal-favorite-icon" class="favorite-icon">★</span>
         <span>Favori</span>
-        <input type="checkbox" id="favorite-checkbox" hidden>
+        <input type="checkbox" id="add-favorite-checkbox" hidden>
       </div>
 
       <button type="submit">Ajouter</button>

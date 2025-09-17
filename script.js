@@ -2,9 +2,9 @@ const API_URL = "https://mon-site-recette-backend.onrender.com/recipes";
 
 const recipesContainer = document.getElementById("recipes-container");
 const addRecipeBtn = document.getElementById("add-recipe-btn");
-const modal = document.getElementById("recipe-modal");
-const closeBtn = document.querySelector(".close-btn");
-const form = document.getElementById("recipe-form");
+const modal = document.getElementById("add-recipe-modal");
+const closeBtn = modal.querySelector(".close-btn");
+const form = document.getElementById("add-recipe-form");
 const filters = document.querySelectorAll("#filters button");
 const recipeCount = document.getElementById("recipe-count");
 const sortButtons = document.querySelectorAll(".sort-btn");
@@ -15,16 +15,13 @@ const ingredientInput = document.getElementById("search-ingredient");
 const clearTitleBtn = document.getElementById("clear-title");
 const clearIngredientBtn = document.getElementById("clear-ingredient");
 
-// --- Toggle favori dans le modal ---
-const modalFavoriteIcon = document.getElementById("modal-favorite-icon");
-const modalFavoriteCheckbox = document.getElementById("favorite-checkbox");
+const modalFavoriteIcon = document.getElementById("add-modal-favorite-icon");
+const modalFavoriteCheckbox = document.getElementById("add-favorite-checkbox");
 
-if (modalFavoriteIcon && modalFavoriteCheckbox) {
-  modalFavoriteIcon.addEventListener("click", () => {
-    modalFavoriteIcon.classList.toggle("active");
-    modalFavoriteCheckbox.checked = modalFavoriteIcon.classList.contains("active");
-  });
-}
+modalFavoriteIcon.addEventListener("click", () => {
+  modalFavoriteIcon.classList.toggle("active");
+  modalFavoriteCheckbox.checked = modalFavoriteIcon.classList.contains("active");
+});
 
 let allRecipes = [];
 let currentCategory = "all";
@@ -33,7 +30,6 @@ let currentTitle = "";
 let currentIngredient = "";
 let filterFavorites = false;
 
-// Notification
 function showNotification(message, type = "success") {
   const notif = document.getElementById("notification");
   notif.textContent = message;
@@ -42,7 +38,6 @@ function showNotification(message, type = "success") {
   setTimeout(() => notif.classList.remove("show"), 3000);
 }
 
-// Afficher les recettes
 function renderRecipes(recipes) {
   recipesContainer.innerHTML = "";
   if (recipes.length === 0) {
@@ -65,8 +60,10 @@ function renderRecipes(recipes) {
           <ul>${recipe.ingredients.map(i => `<li>${i}</li>`).join("")}</ul>
         </div>
       `;
-      card.addEventListener("click", () => {
-        window.location.href = `recette.html?id=${recipe._id}`;
+      card.addEventListener("click", (e) => {
+        if (!e.target.classList.contains("favorite-icon")) {
+          window.location.href = `recette.html?id=${recipe._id}`;
+        }
       });
       recipesContainer.appendChild(card);
     });
@@ -74,21 +71,16 @@ function renderRecipes(recipes) {
   recipeCount.textContent = `${recipes.length} recette(s) trouvée(s)`;
 }
 
-// Filtres et tri
 function applyFiltersAndRender() {
   let filtered = [...allRecipes];
-
   if (currentCategory !== "all") filtered = filtered.filter(r => r.category === currentCategory);
   if (currentTitle) filtered = filtered.filter(r => r.title.toLowerCase().includes(currentTitle));
   if (currentIngredient) filtered = filtered.filter(r => r.ingredients.some(i => i.toLowerCase().includes(currentIngredient)));
   if (filterFavorites) filtered = filtered.filter(r => r.favorite);
-
   filtered.sort((a, b) => currentSort === "asc" ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title));
-
   renderRecipes(filtered);
 }
 
-// Récupérer toutes les recettes
 async function fetchRecipes() {
   try {
     const response = await fetch(API_URL);
@@ -99,7 +91,7 @@ async function fetchRecipes() {
   }
 }
 
-// Ajouter recette
+// Gestion modale
 addRecipeBtn.addEventListener("click", () => modal.style.display = "block");
 closeBtn.addEventListener("click", () => modal.style.display = "none");
 window.addEventListener("click", e => { if(e.target === modal) modal.style.display = "none"; });
@@ -107,12 +99,12 @@ window.addEventListener("click", e => { if(e.target === modal) modal.style.displ
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const newRecipe = {
-    title: form.title.value,
-    category: form.category.value,
-    time: form.time.value,
-    ingredients: form.ingredients.value.split(",").map(i => i.trim()),
-    description: form.description.value,
-    image: form.image.value || "",
+    title: document.getElementById("add-title").value,
+    category: document.getElementById("add-category").value,
+    time: document.getElementById("add-time").value,
+    ingredients: document.getElementById("add-ingredients").value.split(",").map(i => i.trim()),
+    description: document.getElementById("add-description").value,
+    image: document.getElementById("add-image").value || "",
     favorite: modalFavoriteCheckbox.checked
   };
   try {
@@ -134,34 +126,27 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-// Filtres catégories
-filters.forEach(btn => {
-  btn.addEventListener("click", () => {
-    filters.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    currentCategory = btn.dataset.category;
-    applyFiltersAndRender();
-  });
-});
+// Filtres et tri
+filters.forEach(btn => btn.addEventListener("click", () => {
+  filters.forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  currentCategory = btn.dataset.category;
+  applyFiltersAndRender();
+}));
 
-// Filtre favoris (indépendant et combinable)
 favoriteFilterBtn.addEventListener("click", () => {
   filterFavorites = !filterFavorites;
   favoriteFilterBtn.classList.toggle("active");
   applyFiltersAndRender();
 });
 
-// Tri
-sortButtons.forEach(btn => {
-  btn.addEventListener("click", () => {
-    sortButtons.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    currentSort = btn.dataset.sort;
-    applyFiltersAndRender();
-  });
-});
+sortButtons.forEach(btn => btn.addEventListener("click", () => {
+  sortButtons.forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  currentSort = btn.dataset.sort;
+  applyFiltersAndRender();
+}));
 
-// Recherche
 titleInput.addEventListener("input", () => {
   currentTitle = titleInput.value.toLowerCase();
   clearTitleBtn.classList.toggle("show", currentTitle.length > 0);
@@ -185,5 +170,4 @@ clearIngredientBtn.addEventListener("click", () => {
   applyFiltersAndRender();
 });
 
-// Démarrage
 fetchRecipes();

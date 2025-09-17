@@ -13,7 +13,7 @@
   <button id="back-btn">← Retour</button>
   <div style="position: relative;">
     <img id="recipe-image" src="" alt="Photo de la recette" style="display:none;">
-    <span id="favorite-icon" class="favorite-icon">★</span>
+    <span id="detail-favorite-icon" class="favorite-icon">★</span>
   </div>
   <h2 id="recipe-title"></h2>
   <p><strong>Catégorie :</strong> <span id="recipe-category"></span></p>
@@ -30,16 +30,16 @@
 </div>
 
 <!-- Modal pour modifier la recette -->
-<div id="recipe-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+<div id="edit-recipe-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
   <div class="modal-content">
     <span class="close-btn" role="button" aria-label="Fermer la modale">&times;</span>
-    <h2 id="modal-title">Modifier recette</h2>
-    <form id="recipe-form">
-      <label for="title">Titre</label>
-      <input type="text" id="title" required>
+    <h2 id="edit-modal-title">Modifier recette</h2>
+    <form id="edit-recipe-form">
+      <label for="edit-title">Titre</label>
+      <input type="text" id="edit-title" required>
 
-      <label for="category">Catégorie</label>
-      <select id="category" required>
+      <label for="edit-category">Catégorie</label>
+      <select id="edit-category" required>
         <option value="Plat">Plat</option>
         <option value="Dessert">Dessert</option>
         <option value="Entrée">Entrée</option>
@@ -47,22 +47,22 @@
         <option value="Cocktail">Cocktail</option>
       </select>
 
-      <label for="time">Temps</label>
-      <input type="text" id="time" required>
+      <label for="edit-time">Temps</label>
+      <input type="text" id="edit-time" required>
 
-      <label for="ingredients">Ingrédients (séparés par des virgules)</label>
-      <textarea id="ingredients" required></textarea>
+      <label for="edit-ingredients">Ingrédients (séparés par des virgules)</label>
+      <textarea id="edit-ingredients" required></textarea>
 
-      <label for="description">Description</label>
-      <textarea id="description" required></textarea>
+      <label for="edit-description">Description</label>
+      <textarea id="edit-description" required></textarea>
 
-      <label for="image">Image (URL, optionnelle)</label>
-      <input type="url" id="image">
+      <label for="edit-image">Image (URL, optionnelle)</label>
+      <input type="url" id="edit-image">
 
       <div class="modal-favorite">
-        <span id="modal-favorite-icon" class="favorite-icon">★</span>
+        <span id="edit-modal-favorite-icon" class="favorite-icon">★</span>
         <span>Favori</span>
-        <input type="checkbox" id="favorite-checkbox" hidden>
+        <input type="checkbox" id="edit-favorite-checkbox" hidden>
       </div>
 
       <button type="submit">Modifier</button>
@@ -88,16 +88,16 @@ const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
 
 const backBtn = document.getElementById("back-btn");
-const modal = document.getElementById("recipe-modal");
+const modal = document.getElementById("edit-recipe-modal");
 const closeBtn = modal.querySelector(".close-btn");
-const form = document.getElementById("recipe-form");
+const form = document.getElementById("edit-recipe-form");
 const deleteModal = document.getElementById("delete-modal");
 const cancelDeleteBtn = document.getElementById("cancel-delete");
 const confirmDeleteBtn = document.getElementById("confirm-delete");
 
-const favoriteIcon = document.getElementById("favorite-icon");
-const modalFavoriteIcon = document.getElementById("modal-favorite-icon");
-const favoriteCheckbox = document.getElementById("favorite-checkbox");
+const favoriteIcon = document.getElementById("detail-favorite-icon");
+const modalFavoriteIcon = document.getElementById("edit-modal-favorite-icon");
+const favoriteCheckbox = document.getElementById("edit-favorite-checkbox");
 
 let recipe = null;
 
@@ -187,12 +187,12 @@ confirmDeleteBtn.addEventListener("click", async ()=>{
 // Modifier
 document.getElementById("edit-btn").addEventListener("click",()=>{
   modal.style.display="block";
-  form.title.value = recipe.title;
-  form.category.value = recipe.category;
-  form.time.value = recipe.time;
-  form.ingredients.value = Array.isArray(recipe.ingredients)? recipe.ingredients.join(", "):"";
-  form.description.value = recipe.description;
-  form.image.value = recipe.image||"";
+  form["edit-title"].value = recipe.title;
+  form["edit-category"].value = recipe.category;
+  form["edit-time"].value = recipe.time;
+  form["edit-ingredients"].value = Array.isArray(recipe.ingredients)? recipe.ingredients.join(", "):"";
+  form["edit-description"].value = recipe.description;
+  form["edit-image"].value = recipe.image||"";
   modalFavoriteIcon.classList.toggle("active", recipe.favorite);
   favoriteCheckbox.checked = recipe.favorite;
 });
@@ -204,12 +204,12 @@ window.addEventListener("click",(e)=>{ if(e.target===modal) modal.style.display=
 form.addEventListener("submit", async (e)=>{
   e.preventDefault();
   const updatedRecipe = {
-    title: form.title.value,
-    category: form.category.value,
-    time: form.time.value,
-    ingredients: form.ingredients.value.split(",").map(i=>i.trim()),
-    description: form.description.value,
-    image: form.image.value||"",
+    title: form["edit-title"].value,
+    category: form["edit-category"].value,
+    time: form["edit-time"].value,
+    ingredients: form["edit-ingredients"].value.split(",").map(i=>i.trim()),
+    description: form["edit-description"].value,
+    image: form["edit-image"].value||"",
     favorite: favoriteCheckbox.checked
   };
 
