@@ -89,7 +89,13 @@ function applyFiltersAndRender() {
     filtered = filtered.filter(r => r.favorite);
   }
 
-  filtered.sort((a, b) => currentSort === "asc" ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title));
+  // Tri
+  filtered.sort((a, b) => {
+    if (currentSort === "asc") return a.title.localeCompare(b.title);
+    if (currentSort === "desc") return b.title.localeCompare(a.title);
+    if (currentSort === "newest") return new Date(b.createdAt) - new Date(a.createdAt);
+    if (currentSort === "oldest") return new Date(a.createdAt) - new Date(b.createdAt);
+  });
 
   renderRecipes(filtered);
 }
