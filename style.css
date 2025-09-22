@@ -37,6 +37,20 @@ header { background:#ff7043; color:white; padding:20px; }
   font-weight:bold;
 }
 
+/* --- Ligne de séparation entre filtres et tri --- */
+#filters {
+  border-bottom: 3px solid #ff7043; /* ligne orange */
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.sort-controls {
+  width: 100%; /* occupe toute la ligne */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 #add-recipe-btn { position: absolute; top: 5px; right: 20px; padding: 10px 18px; background: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 3px 6px rgba(0,0,0,0.15); transition: background 0.3s, transform 0.2s; }
 #add-recipe-btn:hover { background: #45a049; transform: scale(1.05); }
 
