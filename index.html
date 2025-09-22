@@ -27,7 +27,7 @@
         </div>
       </div>
 
-      <!-- Ligne 1 : filtres de catégorie -->
+      <!-- Filtres catégorie + combinatoires -->
       <div id="filters">
         <button data-category="all" class="active">Toutes</button>
         <button data-category="Plat">Plats</button>
@@ -37,12 +37,14 @@
         <button data-category="Cocktail">Cocktails</button>
       </div>
 
-      <!-- Ligne 2 : bouton Favoris -->
-      <div id="favorites-bar">
-        <button id="filter-favorite">Favoris</button>
+      <div id="combinatory-filters">
+        <button id="filter-favorite" class="filter-btn">Favoris</button>
+        <button id="filter-gluten" class="filter-btn">Gluten Free</button>
+        <button id="filter-vege" class="filter-btn">Végé</button>
+        <button id="filter-grogros" class="filter-btn">Grogros</button>
       </div>
 
-      <!-- Ligne 3 : boutons de tri -->
+      <!-- Boutons de tri -->
       <div class="sort-controls">
         <button data-sort="asc" class="sort-btn active">A→Z</button>
         <button data-sort="desc" class="sort-btn">Z→A</button>
@@ -56,8 +58,6 @@
 </header>
 
 <main id="recipes-container"></main>
-
-<!-- Pagination -->
 <div id="pagination"></div>
 
 <!-- Modal pour ajouter une recette -->
@@ -94,6 +94,13 @@
         <span id="modal-favorite-icon" class="favorite-icon">★</span>
         <span>Favori</span>
         <input type="checkbox" id="favorite-checkbox" hidden>
+      </div>
+
+      <!-- Nouveaux filtres combinatoires pour la recette -->
+      <div class="modal-filters">
+        <label><input type="checkbox" id="recipe-gluten"> Gluten Free</label>
+        <label><input type="checkbox" id="recipe-vege"> Végé</label>
+        <label><input type="checkbox" id="recipe-grogros"> Grogros</label>
       </div>
 
       <button type="submit">Ajouter</button>
