@@ -3,20 +3,51 @@
 body { font-family: Arial, sans-serif; margin:0; background:#f6f6f6; }
 
 header { background:#ff7043; color:white; padding:20px; }
-.header-inner { max-width: 1000px; margin: 0 auto; position: relative; }
+.header-inner { max-width: 1000px; margin:0 auto; position:relative; }
 
-.controls { display: flex; flex-direction: column; gap:10px; }
+.controls { display:flex; flex-direction:column; gap:10px; }
 .search-bar-container { display:flex; gap:10px; width:100%; }
 .search-wrapper { flex:1; position:relative; }
-.search-wrapper input { padding:10px 12px; border-radius:6px; border:none; width:100%; padding-right:35px; font-size:15px; }
-.clear-btn { position:absolute; right:8px; top:50%; transform:translateY(-50%); width:20px; height:20px; border:none; border-radius:50%; background:#ccc; cursor:pointer; padding:0; line-height:0; opacity:0; pointer-events:none; transition:opacity 0.3s ease, background 0.3s; }
+.search-wrapper input {
+  padding:10px 12px;
+  border-radius:6px;
+  border:none;
+  width:100%;
+  padding-right:35px;
+  font-size:15px;
+}
+.clear-btn {
+  position:absolute;
+  right:8px;
+  top:50%;
+  transform:translateY(-50%);
+  width:20px;
+  height:20px;
+  border:none;
+  border-radius:50%;
+  background:#ccc;
+  cursor:pointer;
+  padding:0;
+  line-height:0;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.3s ease, background 0.3s;
+}
 .clear-btn::before { content:"×"; color:white; display:block; text-align:center; line-height:20px; font-size:14px; }
 .clear-btn.show { opacity:1; pointer-events:auto; }
 .clear-btn:hover { background:#ff7043; }
 
 /* --- Ligne filtres et combinatoires --- */
-#filters, #combinatory-filters, .sort-controls { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
-#filters button, #combinatory-filters .filter-btn, .sort-controls .sort-btn {
+#filters, #combinatory-filters, .sort-controls {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+}
+
+#filters button,
+#combinatory-filters .filter-btn,
+.sort-controls .sort-btn {
   padding:10px 14px;
   border:none;
   border-radius:5px;
@@ -26,19 +57,44 @@ header { background:#ff7043; color:white; padding:20px; }
   transition:0.3s;
   font-size:15px;
 }
-#filters button.active, #combinatory-filters .filter-btn.active, .sort-controls .sort-btn.active {
+
+#filters button.active,
+#combinatory-filters .filter-btn.active,
+.sort-controls .sort-btn.active {
   background:white;
   color:#ff7043;
   font-weight:bold;
 }
 
 /* --- Bouton ajout --- */
-#add-recipe-btn { position:absolute; top:5px; right:20px; padding:10px 18px; background:#4CAF50; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow:0 3px 6px rgba(0,0,0,0.15); transition: background 0.3s, transform 0.2s; }
+#add-recipe-btn {
+  position:absolute;
+  top:5px;
+  right:20px;
+  padding:10px 18px;
+  background:#4CAF50;
+  color:white;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+  box-shadow:0 3px 6px rgba(0,0,0,0.15);
+  transition: background 0.3s, transform 0.2s;
+}
 #add-recipe-btn:hover { background:#45a049; transform:scale(1.05); }
 
 /* --- Main & recettes --- */
 main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:20px; }
-.recipe-card { background:white; border-radius:10px; padding:0; overflow:hidden; position:relative; box-shadow:0 5px 15px rgba(0,0,0,0.1); transition:transform 0.3s, box-shadow 0.3s; cursor:pointer; }
+.recipe-card {
+  background:white;
+  border-radius:10px;
+  padding:0;
+  overflow:hidden;
+  position:relative;
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+  transition:transform 0.3s, box-shadow 0.3s;
+  cursor:pointer;
+}
 .recipe-card:hover { transform:scale(1.03); box-shadow:0 12px 24px rgba(0,0,0,0.2); }
 .recipe-card img { width:100%; display:block; }
 .recipe-card .card-content { padding:15px; }
@@ -49,21 +105,62 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 
 /* --- Modal --- */
 .modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background:rgba(0,0,0,0.5); }
-.modal-content { background:white; margin:10% auto; padding:20px; border-radius:10px; width:90%; max-width:500px; position:relative; }
+.modal-content {
+  background:white;
+  margin:10% auto;
+  padding:20px;
+  border-radius:10px;
+  width:90%;
+  max-width:500px;
+  position:relative;
+}
 .close-btn { position:absolute; right:15px; top:10px; font-size:25px; font-weight:bold; cursor:pointer; }
-.modal-content form input, .modal-content form textarea, .modal-content form select { width:100%; padding:8px; margin:8px 0 15px; border-radius:5px; border:1px solid #ccc; }
-.modal-content form button { padding:10px 15px; border:none; background:#4CAF50; color:white; border-radius:5px; cursor:pointer; }
+.modal-content form input, .modal-content form textarea, .modal-content form select {
+  width:100%;
+  padding:8px;
+  margin:8px 0 15px;
+  border-radius:5px;
+  border:1px solid #ccc;
+}
+.modal-content form button {
+  padding:10px 15px;
+  border:none;
+  background:#4CAF50;
+  color:white;
+  border-radius:5px;
+  cursor:pointer;
+}
 .modal-content form button:hover { background:#45a049; }
 .modal-favorite { display:flex; align-items:center; gap:10px; margin-bottom:15px; cursor:pointer; }
 .modal-favorite .favorite-icon { font-size:24px; color: grey; transition: color 0.3s; }
 .modal-favorite .favorite-icon.active { color: gold; }
-.modal-filters { display:flex; gap:10px; margin-bottom:15px; }
+.modal-filters { display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap; }
 
-/* --- Detail page --- */
-.detail-page { max-width:1000px; margin:20px auto; padding:20px; background:white; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.1); position:relative; }
+/* --- Détails recette --- */
+.detail-page {
+  max-width:1000px;
+  margin:20px auto;
+  padding:20px;
+  background:white;
+  border-radius:10px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+  position:relative;
+}
 .detail-page img { width:100%; border-radius:10px; margin-bottom:20px; }
 .detail-page h2, .detail-page h3 { margin-top:15px; }
-#back-btn { display:inline-block; margin-bottom:20px; padding:10px 18px; background:#ff7043; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow:0 3px 6px rgba(0,0,0,0.15); transition: background 0.3s, transform 0.2s; }
+#back-btn {
+  display:inline-block;
+  margin-bottom:20px;
+  padding:10px 18px;
+  background:#ff7043;
+  color:white;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+  box-shadow:0 3px 6px rgba(0,0,0,0.15);
+  transition: background 0.3s, transform 0.2s;
+}
 #back-btn:hover { background:#f4511e; transform:scale(1.05); }
 .actions { display:flex; gap:10px; margin-top:20px; }
 .actions button { padding:10px 15px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; transition:0.3s; }
@@ -74,8 +171,22 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 .detail-page .favorite-icon { position:absolute; top:10px; right:10px; font-size:24px; color: grey; transition: color 0.3s; }
 .detail-page .favorite-icon.active { color: gold; }
 
-/* --- Notification --- */
-#notification { position:fixed; top:10px; left:50%; transform:translateX(-50%); padding:12px 20px; border-radius:6px; font-weight:bold; color:white; box-shadow:0 3px 6px rgba(0,0,0,0.15); opacity:0; pointer-events:none; transition: opacity 0.5s ease, top 0.5s ease; z-index:2000; }
+/* --- Notifications --- */
+#notification {
+  position:fixed;
+  top:10px;
+  left:50%;
+  transform:translateX(-50%);
+  padding:12px 20px;
+  border-radius:6px;
+  font-weight:bold;
+  color:white;
+  box-shadow:0 3px 6px rgba(0,0,0,0.15);
+  opacity:0;
+  pointer-events:none;
+  transition: opacity 0.5s ease, top 0.5s ease;
+  z-index:2000;
+}
 #notification.show { opacity:1; pointer-events:auto; top:20px; }
 #notification.success { background:#4CAF50; }
 #notification.warning { background:#ff9800; }
@@ -83,6 +194,28 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 
 /* --- Pagination --- */
 #pagination { display:flex; justify-content:center; gap:8px; margin:20px 0; flex-wrap:wrap; }
-#pagination button { padding:8px 12px; border:none; border-radius:6px; background:rgba(255,255,255,0.2); color:#ff7043; cursor:pointer; font-weight:bold; transition:background 0.3s, color 0.3s; }
+#pagination button {
+  padding:8px 12px;
+  border:none;
+  border-radius:6px;
+  background:rgba(255,255,255,0.2);
+  color:#ff7043;
+  cursor:pointer;
+  font-weight:bold;
+  transition:background 0.3s, color 0.3s;
+}
 #pagination button:hover { background:#ff7043; color:white; }
 #pagination button.active { background:#ff7043; color:white; font-weight:bold; box-shadow:0 3px 6px rgba(0,0,0,0.15); }
+
+/* --- Boutons combinatoires uniformes --- */
+#combinatory-filters .filter-btn {
+  background:rgba(255,255,255,0.3);
+  color:white;
+  font-weight:normal;
+  transition:0.3s;
+}
+#combinatory-filters .filter-btn.active {
+  background:white;
+  color:#ff7043;
+  font-weight:bold;
+}
