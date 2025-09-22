@@ -1,4 +1,3 @@
-
 const API_URL = "https://mon-site-recette-backend.onrender.com/recipes";
 
 const recipesContainer = document.getElementById("recipes-container");
@@ -6,10 +5,10 @@ const addRecipeBtn = document.getElementById("add-recipe-btn");
 const modal = document.getElementById("recipe-modal");
 const closeBtn = document.querySelector(".close-btn");
 const form = document.getElementById("recipe-form");
-const filters = document.querySelectorAll("#filters button[data-category]"); 
-const recipeCount = document.getElementById("recipe-count");
-const sortButtons = document.querySelectorAll(".sort-btn");
+
+const filters = document.querySelectorAll("#filters button[data-category]");
 const favoriteFilterBtn = document.getElementById("filter-favorite");
+const sortButtons = document.querySelectorAll(".sort-controls .sort-btn");
 
 const titleInput = document.getElementById("search-title");
 const ingredientInput = document.getElementById("search-ingredient");
@@ -19,19 +18,7 @@ const clearIngredientBtn = document.getElementById("clear-ingredient");
 const modalFavoriteIcon = document.getElementById("modal-favorite-icon");
 const modalFavoriteCheckbox = document.getElementById("favorite-checkbox");
 
-const paginationContainer = document.createElement("div");
-paginationContainer.id = "pagination";
-paginationContainer.style.display = "flex";
-paginationContainer.style.justifyContent = "center";
-paginationContainer.style.marginTop = "20px";
-recipesContainer.parentNode.appendChild(paginationContainer);
-
-if (modalFavoriteIcon && modalFavoriteCheckbox) {
-  modalFavoriteIcon.addEventListener("click", () => {
-    modalFavoriteIcon.classList.toggle("active");
-    modalFavoriteCheckbox.checked = modalFavoriteIcon.classList.contains("active");
-  });
-}
+const paginationContainer = document.getElementById("pagination");
 
 let allRecipes = [];
 let currentCategory = "all";
@@ -39,11 +26,10 @@ let currentSort = "asc";
 let currentTitle = "";
 let currentIngredient = "";
 let filterFavorites = false;
-
-// --- Pagination ---
 let currentPage = 1;
-const recipesPerPage = 12; // cartes par page
+const recipesPerPage = 12;
 
+// --- Notification ---
 function showNotification(message, type = "success") {
   const notif = document.getElementById("notification");
   notif.textContent = message;
@@ -52,43 +38,53 @@ function showNotification(message, type = "success") {
   setTimeout(() => notif.classList.remove("show"), 3000);
 }
 
-// Afficher les recettes
+// --- Modal Favoris toggle ---
+if (modalFavoriteIcon && modalFavoriteCheckbox) {
+  modalFavoriteIcon.addEventListener("click", () => {
+    modalFavoriteIcon.classList.toggle("active");
+    modalFavoriteCheckbox.checked = modalFavoriteIcon.classList.contains("active");
+  });
+}
+
+// --- Afficher recettes ---
 function renderRecipes(recipes) {
   recipesContainer.innerHTML = "";
   if (recipes.length === 0) {
-    recipesContainer.innerHTML = `<p>Aucune recette trouvée.</p>`;
-  } else {
-    const start = (currentPage - 1) * recipesPerPage;
-    const end = start + recipesPerPage;
-    const recipesToShow = recipes.slice(start, end);
-
-    recipesToShow.forEach(recipe => {
-      const card = document.createElement("div");
-      card.className = "recipe-card";
-      const favoriteHtml = recipe.favorite ? `<span class="favorite-icon">★</span>` : "";
-      card.innerHTML = `
-        ${recipe.image ? `<img src="${recipe.image}" alt="Image de ${recipe.title}">` : ""}
-        ${favoriteHtml}
-        <div class="card-content">
-          <h2>${recipe.title}</h2>
-          <p><strong>Catégorie :</strong> ${recipe.category}</p>
-          <p><strong>Temps :</strong> ${recipe.time}</p>
-          <h3>Ingrédients :</h3>
-          <ul>${recipe.ingredients.map(i => `<li>${i}</li>`).join("")}</ul>
-        </div>
-      `;
-      card.addEventListener("click", () => {
-        window.location.href = `recette.html?id=${recipe._id}`;
-      });
-      recipesContainer.appendChild(card);
-    });
-
-    renderPagination(recipes.length);
+    recipesContainer.innerHTML = "<p>Aucune recette trouvée.</p>";
+    paginationContainer.innerHTML = "";
+    recipeCount.textContent = "0 recette(s) trouvée(s)";
+    return;
   }
-  recipeCount.textContent = `${recipes.length} recette(s) trouvée(s)`;
+
+  const start = (currentPage - 1) * recipesPerPage;
+  const end = start + recipesPerPage;
+  const recipesToShow = recipes.slice(start, end);
+
+  recipesToShow.forEach(recipe => {
+    const card = document.createElement("div");
+    card.className = "recipe-card";
+    const favoriteHtml = recipe.favorite ? `<span class="favorite-icon">★</span>` : "";
+    card.innerHTML = `
+      ${recipe.image ? `<img src="${recipe.image}" alt="Image de ${recipe.title}">` : ""}
+      ${favoriteHtml}
+      <div class="card-content">
+        <h2>${recipe.title}</h2>
+        <p><strong>Catégorie :</strong> ${recipe.category}</p>
+        <p><strong>Temps :</strong> ${recipe.time}</p>
+        <h3>Ingrédients :</h3>
+        <ul>${recipe.ingredients.map(i => `<li>${i}</li>`).join("")}</ul>
+      </div>
+    `;
+    card.addEventListener("click", () => {
+      window.location.href = `recette.html?id=${recipe._id}`;
+    });
+    recipesContainer.appendChild(card);
+  });
+
+  renderPagination(recipes.length);
 }
 
-// Générer la pagination
+// --- Pagination ---
 function renderPagination(totalRecipes) {
   paginationContainer.innerHTML = "";
   const totalPages = Math.ceil(totalRecipes / recipesPerPage);
@@ -97,7 +93,6 @@ function renderPagination(totalRecipes) {
   for (let i = 1; i <= totalPages; i++) {
     const btn = document.createElement("button");
     btn.textContent = i;
-    btn.style.margin = "0 5px";
     btn.classList.toggle("active", i === currentPage);
     btn.addEventListener("click", () => {
       currentPage = i;
@@ -107,7 +102,7 @@ function renderPagination(totalRecipes) {
   }
 }
 
-// Appliquer filtres et tri
+// --- Appliquer filtres, tri, recherche ---
 function applyFiltersAndRender() {
   let filtered = [...allRecipes];
 
@@ -116,18 +111,18 @@ function applyFiltersAndRender() {
   if (currentIngredient) filtered = filtered.filter(r => r.ingredients.some(i => i.toLowerCase().includes(currentIngredient)));
   if (filterFavorites) filtered = filtered.filter(r => r.favorite);
 
-  switch(currentSort) {
+  switch (currentSort) {
     case "asc":
-      filtered.sort((a,b) => a.title.localeCompare(b.title));
+      filtered.sort((a, b) => a.title.localeCompare(b.title));
       break;
     case "desc":
-      filtered.sort((a,b) => b.title.localeCompare(a.title));
+      filtered.sort((a, b) => b.title.localeCompare(a.title));
       break;
     case "newest":
-      filtered.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+      filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       break;
     case "oldest":
-      filtered.sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt));
+      filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
       break;
   }
 
@@ -137,11 +132,11 @@ function applyFiltersAndRender() {
   renderRecipes(filtered);
 }
 
-// Récupérer toutes les recettes
+// --- Récupérer recettes depuis API ---
 async function fetchRecipes() {
   try {
-    const response = await fetch(API_URL);
-    allRecipes = await response.json();
+    const res = await fetch(API_URL);
+    allRecipes = await res.json();
     applyFiltersAndRender();
   } catch (err) {
     console.error("Erreur lors de la récupération :", err);
@@ -153,7 +148,7 @@ addRecipeBtn.addEventListener("click", () => modal.style.display = "block");
 closeBtn.addEventListener("click", () => modal.style.display = "none");
 window.addEventListener("click", e => { if(e.target === modal) modal.style.display = "none"; });
 
-// Ajouter recette
+// --- Ajouter recette ---
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const newRecipe = {
@@ -184,7 +179,7 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-// --- Filtre catégorie ---
+// --- Filtres catégorie ---
 filters.forEach(btn => {
   btn.addEventListener("click", () => {
     filters.forEach(b => b.classList.remove("active"));
@@ -195,7 +190,7 @@ filters.forEach(btn => {
   });
 });
 
-// Filtre favoris
+// --- Filtre Favoris ---
 favoriteFilterBtn.addEventListener("click", () => {
   filterFavorites = !filterFavorites;
   favoriteFilterBtn.classList.toggle("active");
@@ -203,7 +198,7 @@ favoriteFilterBtn.addEventListener("click", () => {
   applyFiltersAndRender();
 });
 
-// Tri
+// --- Tri ---
 sortButtons.forEach(btn => {
   btn.addEventListener("click", () => {
     sortButtons.forEach(b => b.classList.remove("active"));
@@ -214,19 +209,21 @@ sortButtons.forEach(btn => {
   });
 });
 
-// Recherche
+// --- Recherche ---
 titleInput.addEventListener("input", () => {
   currentTitle = titleInput.value.toLowerCase();
   clearTitleBtn.classList.toggle("show", currentTitle.length > 0);
   currentPage = 1;
   applyFiltersAndRender();
 });
+
 ingredientInput.addEventListener("input", () => {
   currentIngredient = ingredientInput.value.toLowerCase();
   clearIngredientBtn.classList.toggle("show", currentIngredient.length > 0);
   currentPage = 1;
   applyFiltersAndRender();
 });
+
 clearTitleBtn.addEventListener("click", () => {
   titleInput.value = "";
   currentTitle = "";
@@ -234,6 +231,7 @@ clearTitleBtn.addEventListener("click", () => {
   currentPage = 1;
   applyFiltersAndRender();
 });
+
 clearIngredientBtn.addEventListener("click", () => {
   ingredientInput.value = "";
   currentIngredient = "";
@@ -244,4 +242,3 @@ clearIngredientBtn.addEventListener("click", () => {
 
 // --- Démarrage ---
 fetchRecipes();
-
