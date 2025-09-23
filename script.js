@@ -112,7 +112,7 @@ function renderPagination(totalRecipes) {
 
 // --- Appliquer filtres et tri ---
 function applyFiltersAndRender() {
-  let filtered = [...allRecipes];
+  let filtered = [...allRecipes]; // ne jamais modifier allRecipes
 
   // Filtre catégorie
   if (currentCategory !== "all") filtered = filtered.filter(r => r.category === currentCategory);
@@ -131,33 +131,31 @@ function applyFiltersAndRender() {
   if (filterFavorites) filtered = filtered.filter(r => r.favorite);
 
   // Filtres combinatoires
-  if (activeCombiFilters.length > 0) {
-    activeCombiFilters.forEach(f => {
-      if (f === "gluten") {
-        filtered = filtered.filter(r =>
-          !r.ingredients.some(i =>
-            i.toLowerCase().includes("blé") ||
-            i.toLowerCase().includes("farine") ||
-            i.toLowerCase().includes("pâte")
-          )
-        );
-      }
-      if (f === "vege") {
-        filtered = filtered.filter(r =>
-          !r.ingredients.some(i =>
-            i.toLowerCase().includes("viande") ||
-            i.toLowerCase().includes("poulet") ||
-            i.toLowerCase().includes("poisson") ||
-            i.toLowerCase().includes("boeuf") ||
-            i.toLowerCase().includes("porc")
-          )
-        );
-      }
-      if (f === "grogros") {
-        filtered = filtered.filter(r => r.ingredients.length >= 8);
-      }
-    });
-  }
+  activeCombiFilters.forEach(f => {
+    if (f === "gluten") {
+      filtered = filtered.filter(r =>
+        !r.ingredients.some(i =>
+          i.toLowerCase().includes("blé") ||
+          i.toLowerCase().includes("farine") ||
+          i.toLowerCase().includes("pâte")
+        )
+      );
+    }
+    if (f === "vege") {
+      filtered = filtered.filter(r =>
+        !r.ingredients.some(i =>
+          i.toLowerCase().includes("viande") ||
+          i.toLowerCase().includes("poulet") ||
+          i.toLowerCase().includes("poisson") ||
+          i.toLowerCase().includes("boeuf") ||
+          i.toLowerCase().includes("porc")
+        )
+      );
+    }
+    if (f === "grogros") {
+      filtered = filtered.filter(r => r.ingredients.length >= 8);
+    }
+  });
 
   // Tri
   if (currentSort === "asc") filtered.sort((a, b) => a.title.localeCompare(b.title));
@@ -235,6 +233,7 @@ sortButtons.forEach(btn => {
     sortButtons.forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     currentSort = btn.dataset.sort;
+    currentPage = 1;
     applyFiltersAndRender();
   });
 });
