@@ -27,15 +27,20 @@
         </div>
       </div>
 
-      <!-- Filtres de catégorie -->
+      <!-- Filtres de catégorie et favoris -->
       <div id="filters">
-        <button data-category="all" class="active">Toutes</button>
-        <button data-category="Plat">Plats</button>
-        <button data-category="Dessert">Desserts</button>
-        <button data-category="Entrée">Entrées</button>
-        <button data-category="Snack">Snacks</button>
-        <button data-category="Cocktail">Cocktails</button>
-        <button id="filter-favorite">Favoris</button>
+        <div class="category-buttons">
+          <button data-category="all" class="active">Toutes</button>
+          <button data-category="Plat">Plats</button>
+          <button data-category="Dessert">Desserts</button>
+          <button data-category="Entrée">Entrées</button>
+          <button data-category="Snack">Snacks</button>
+          <button data-category="Cocktail">Cocktails</button>
+        </div>
+
+        <div class="favorite-button-container">
+          <button id="filter-favorite">Favoris</button>
+        </div>
       </div>
 
       <!-- Boutons de tri -->
@@ -100,4 +105,3 @@
 <script src="script.js"></script>
 </body>
 </html>
-
