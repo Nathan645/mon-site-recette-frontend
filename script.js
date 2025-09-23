@@ -39,14 +39,15 @@ let currentTitle = "";
 let currentIngredient = "";
 let filterFavorites = false;
 
-// Nouveaux filtres combinatoires
+// --- Filtres combinatoires ---
 const combiFilterButtons = document.querySelectorAll(".combi-filter");
 let activeCombiFilters = [];
 
 // --- Pagination ---
 let currentPage = 1;
-const recipesPerPage = 12; // cartes par page
+const recipesPerPage = 12;
 
+// --- Notification ---
 function showNotification(message, type = "success") {
   const notif = document.getElementById("notification");
   notif.textContent = message;
@@ -55,7 +56,7 @@ function showNotification(message, type = "success") {
   setTimeout(() => notif.classList.remove("show"), 3000);
 }
 
-// Afficher les recettes
+// --- Rendu des recettes ---
 function renderRecipes(recipes) {
   recipesContainer.innerHTML = "";
   if (recipes.length === 0) {
@@ -91,7 +92,7 @@ function renderRecipes(recipes) {
   recipeCount.textContent = `${recipes.length} recette(s) trouvée(s)`;
 }
 
-// Générer la pagination
+// --- Pagination ---
 function renderPagination(totalRecipes) {
   paginationContainer.innerHTML = "";
   const totalPages = Math.ceil(totalRecipes / recipesPerPage);
@@ -109,31 +110,27 @@ function renderPagination(totalRecipes) {
   }
 }
 
-// Appliquer filtres + tri
+// --- Appliquer filtres et tri ---
 function applyFiltersAndRender() {
   let filtered = [...allRecipes];
 
-  if (currentCategory !== "all") {
-    filtered = filtered.filter(r => r.category === currentCategory);
-  }
+  // Filtre catégorie
+  if (currentCategory !== "all") filtered = filtered.filter(r => r.category === currentCategory);
 
-  if (currentTitle.trim() !== "") {
-    filtered = filtered.filter(r =>
-      r.title.toLowerCase().includes(currentTitle.toLowerCase())
-    );
-  }
+  // Filtre titre
+  if (currentTitle.trim() !== "") filtered = filtered.filter(r =>
+    r.title.toLowerCase().includes(currentTitle.toLowerCase())
+  );
 
-  if (currentIngredient.trim() !== "") {
-    filtered = filtered.filter(r =>
-      r.ingredients.some(i => i.toLowerCase().includes(currentIngredient.toLowerCase()))
-    );
-  }
+  // Filtre ingrédient
+  if (currentIngredient.trim() !== "") filtered = filtered.filter(r =>
+    r.ingredients.some(i => i.toLowerCase().includes(currentIngredient.toLowerCase()))
+  );
 
-  if (filterFavorites) {
-    filtered = filtered.filter(r => r.favorite);
-  }
+  // Filtre favoris
+  if (filterFavorites) filtered = filtered.filter(r => r.favorite);
 
-  // filtres combinatoires
+  // Filtres combinatoires
   if (activeCombiFilters.length > 0) {
     activeCombiFilters.forEach(f => {
       if (f === "gluten") {
@@ -157,27 +154,21 @@ function applyFiltersAndRender() {
         );
       }
       if (f === "grogros") {
-        filtered = filtered.filter(r =>
-          r.ingredients.length >= 8
-        );
+        filtered = filtered.filter(r => r.ingredients.length >= 8);
       }
     });
   }
 
-  if (currentSort === "asc") {
-    filtered.sort((a, b) => a.title.localeCompare(b.title));
-  } else if (currentSort === "desc") {
-    filtered.sort((a, b) => b.title.localeCompare(a.title));
-  } else if (currentSort === "newest") {
-    filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  } else if (currentSort === "oldest") {
-    filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-  }
+  // Tri
+  if (currentSort === "asc") filtered.sort((a, b) => a.title.localeCompare(b.title));
+  else if (currentSort === "desc") filtered.sort((a, b) => b.title.localeCompare(a.title));
+  else if (currentSort === "newest") filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  else if (currentSort === "oldest") filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
   renderRecipes(filtered);
 }
 
-// Récupérer les recettes
+// --- Récupérer les recettes ---
 async function fetchRecipes() {
   try {
     const res = await fetch(API_URL);
@@ -190,15 +181,9 @@ async function fetchRecipes() {
 }
 
 // --- Événements ---
-addRecipeBtn.addEventListener("click", () => {
-  modal.style.display = "block";
-});
-closeBtn.addEventListener("click", () => {
-  modal.style.display = "none";
-});
-window.addEventListener("click", e => {
-  if (e.target === modal) modal.style.display = "none";
-});
+addRecipeBtn.addEventListener("click", () => modal.style.display = "block");
+closeBtn.addEventListener("click", () => modal.style.display = "none");
+window.addEventListener("click", e => { if(e.target === modal) modal.style.display = "none"; });
 
 form.addEventListener("submit", async e => {
   e.preventDefault();
@@ -233,6 +218,7 @@ form.addEventListener("submit", async e => {
   }
 });
 
+// --- Boutons catégorie ---
 filters.forEach(btn => {
   btn.addEventListener("click", () => {
     filters.forEach(b => b.classList.remove("active"));
@@ -243,6 +229,7 @@ filters.forEach(btn => {
   });
 });
 
+// --- Boutons tri ---
 sortButtons.forEach(btn => {
   btn.addEventListener("click", () => {
     sortButtons.forEach(b => b.classList.remove("active"));
@@ -252,6 +239,7 @@ sortButtons.forEach(btn => {
   });
 });
 
+// --- Bouton favoris ---
 favoriteFilterBtn.addEventListener("click", () => {
   favoriteFilterBtn.classList.toggle("active");
   filterFavorites = !filterFavorites;
@@ -259,13 +247,13 @@ favoriteFilterBtn.addEventListener("click", () => {
   applyFiltersAndRender();
 });
 
-// filtres combinatoires
+// --- Filtres combinatoires ---
 combiFilterButtons.forEach(btn => {
   btn.addEventListener("click", () => {
     btn.classList.toggle("active");
     const filter = btn.dataset.filter;
     if (btn.classList.contains("active")) {
-      activeCombiFilters.push(filter);
+      if (!activeCombiFilters.includes(filter)) activeCombiFilters.push(filter);
     } else {
       activeCombiFilters = activeCombiFilters.filter(f => f !== filter);
     }
@@ -274,6 +262,7 @@ combiFilterButtons.forEach(btn => {
   });
 });
 
+// --- Recherche ---
 titleInput.addEventListener("input", () => {
   currentTitle = titleInput.value;
   clearTitleBtn.classList.toggle("show", currentTitle.length > 0);
@@ -300,4 +289,5 @@ clearIngredientBtn.addEventListener("click", () => {
   applyFiltersAndRender();
 });
 
+// --- Initialisation ---
 fetchRecipes();
