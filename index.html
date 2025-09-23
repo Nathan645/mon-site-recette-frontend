@@ -15,7 +15,7 @@
     <button id="add-recipe-btn" aria-label="Ajouter une nouvelle recette">+ Nouvelle recette</button>
 
     <div class="controls">
-      <!-- Barre de recherche -->
+      <!-- 1) Barre de recherche -->
       <div class="search-bar-container">
         <div class="search-wrapper">
           <input type="text" id="search-title" placeholder="Rechercher par titre..." aria-label="Rechercher par titre">
@@ -27,21 +27,25 @@
         </div>
       </div>
 
-      <!-- Filtres sur une ligne -->
-      <div id="filters" class="filters-inline">
+      <!-- 2) Boutons de catégories -->
+      <div class="category-buttons filters-inline">
         <button data-category="all" class="active">Toutes</button>
         <button data-category="Plat">Plats</button>
         <button data-category="Dessert">Desserts</button>
         <button data-category="Entrée">Entrées</button>
         <button data-category="Snack">Snacks</button>
         <button data-category="Cocktail">Cocktails</button>
+      </div>
+
+      <!-- 3) Boutons Favoris + filtres combinatoires -->
+      <div class="filters-inline combi-filters">
         <button id="filter-favorite">Favoris</button>
         <button class="combi-filter" data-filter="gluten">Gluten free</button>
         <button class="combi-filter" data-filter="vege">Végé</button>
         <button class="combi-filter" data-filter="grogros">Grogros</button>
       </div>
 
-      <!-- Boutons de tri alignés comme catégories -->
+      <!-- 4) Boutons de tri -->
       <div class="sort-controls filters-inline">
         <button data-sort="asc" class="sort-btn active">A→Z</button>
         <button data-sort="desc" class="sort-btn">Z→A</button>
