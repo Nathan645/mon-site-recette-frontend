@@ -82,3 +82,9 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 .modal-favorite { display:flex; align-items:center; gap:10px; margin-bottom:15px; cursor:pointer; }
 .modal-favorite .favorite-icon { font-size:24px; color: grey; transition: color 0.3s; }
 .modal-favorite .favorite-icon.active { color: gold; }
+
+.modal-filters {
+  display:flex;
+  gap:15px;
+  margin-bottom:15px;
+}
