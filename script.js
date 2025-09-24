@@ -1,294 +1,220 @@
+// --- Variables globales ---
+let recipes = [];
+let activeCategory = null;
+let activeCombiFilters = new Set();
+const API_URL = "http://localhost:3000/recipes";
 
-const API_URL = "https://mon-site-recette-backend.onrender.com/recipes";
-
-const recipesContainer = document.getElementById("recipes-container");
+// --- DOM Elements ---
+const searchTitle = document.getElementById("search-title");
+const searchIngredient = document.getElementById("search-ingredient");
+const clearTitle = document.getElementById("clear-title");
+const clearIngredient = document.getElementById("clear-ingredient");
+const recipeContainer = document.getElementById("recipes-container");
 const addRecipeBtn = document.getElementById("add-recipe-btn");
-const modal = document.getElementById("recipe-modal");
-const closeBtn = document.querySelector(".close-btn");
-const form = document.getElementById("recipe-form");
-const filters = document.querySelectorAll("#filters button[data-category]"); 
-const recipeCount = document.getElementById("recipe-count");
-const sortButtons = document.querySelectorAll(".sort-btn");
-const favoriteFilterBtn = document.getElementById("filter-favorite");
-
-const titleInput = document.getElementById("search-title");
-const ingredientInput = document.getElementById("search-ingredient");
-const clearTitleBtn = document.getElementById("clear-title");
-const clearIngredientBtn = document.getElementById("clear-ingredient");
-
+const recipeModal = document.getElementById("recipe-modal");
+const closeModal = document.querySelector(".close-btn");
+const recipeForm = document.getElementById("recipe-form");
+const modalTitle = document.getElementById("modal-title");
 const modalFavoriteIcon = document.getElementById("modal-favorite-icon");
-const modalFavoriteCheckbox = document.getElementById("favorite-checkbox");
+const favoriteCheckbox = document.getElementById("favorite-checkbox");
 
-const paginationContainer = document.createElement("div");
-paginationContainer.id = "pagination";
-paginationContainer.style.display = "flex";
-paginationContainer.style.justifyContent = "center";
-paginationContainer.style.marginTop = "20px";
-recipesContainer.parentNode.appendChild(paginationContainer);
+const filters = document.querySelectorAll(".category-buttons button[data-category]");
+const combiFilters = document.querySelectorAll(".combi-filter");
 
-if (modalFavoriteIcon && modalFavoriteCheckbox) {
-  modalFavoriteIcon.addEventListener("click", () => {
-    modalFavoriteIcon.classList.toggle("active");
-    modalFavoriteCheckbox.checked = modalFavoriteIcon.classList.contains("active");
+// --- Fonctions utilitaires ---
+function openModal(title) {
+  modalTitle.textContent = title;
+  recipeModal.style.display = "block";
+}
+function closeModalFunc() {
+  recipeModal.style.display = "none";
+  recipeForm.reset();
+  favoriteCheckbox.checked = false;
+  modalFavoriteIcon.classList.remove("active");
+}
+function getFilteredRecipes() {
+  let filtered = [...recipes];
+  const titleTerm = searchTitle.value.toLowerCase();
+  const ingredientTerm = searchIngredient.value.toLowerCase();
+
+  if (activeCategory && activeCategory !== "all") {
+    filtered = filtered.filter(r => r.category === activeCategory);
+  }
+
+  if (activeCombiFilters.has("gluten")) {
+    filtered = filtered.filter(r =>
+      !r.ingredients.some(i =>
+        i.toLowerCase().includes("blé") ||
+        i.toLowerCase().includes("farine") ||
+        i.toLowerCase().includes("pâte") ||
+        i.toLowerCase().includes("pâtes") ||
+        i.toLowerCase().includes("biscuit") ||
+        i.toLowerCase().includes("pain")
+      )
+    );
+  }
+
+  if (activeCombiFilters.has("vege")) {
+    filtered = filtered.filter(r =>
+      !r.ingredients.some(i =>
+        i.toLowerCase().includes("viande") ||
+        i.toLowerCase().includes("poulet") ||
+        i.toLowerCase().includes("poisson") ||
+        i.toLowerCase().includes("boeuf") ||
+        i.toLowerCase().includes("porc") ||
+        i.toLowerCase().includes("dinde") ||
+        i.toLowerCase().includes("agneau")
+      )
+    );
+  }
+
+  if (titleTerm) {
+    filtered = filtered.filter(r => r.title.toLowerCase().includes(titleTerm));
+  }
+
+  if (ingredientTerm) {
+    filtered = filtered.filter(r =>
+      r.ingredients.some(i => i.toLowerCase().includes(ingredientTerm))
+    );
+  }
+
+  return filtered;
+}
+
+function renderRecipes(list) {
+  recipeContainer.innerHTML = "";
+  if (list.length === 0) {
+    recipeContainer.innerHTML = "<p>Aucune recette trouvée.</p>";
+    return;
+  }
+  list.forEach(r => {
+    const card = document.createElement("div");
+    card.className = "recipe-card";
+
+    card.innerHTML = `
+      <img src="${r.image || 'https://via.placeholder.com/300x200'}" alt="${r.title}">
+      <div class="card-content">
+        <h2>${r.title}</h2>
+        <p><strong>Catégorie:</strong> ${r.category}</p>
+        <p><strong>Temps:</strong> ${r.time}</p>
+        <p>${r.description.substring(0, 100)}...</p>
+        <span class="favorite-icon">${r.favorite ? "★" : "☆"}</span>
+      </div>
+    `;
+
+    card.querySelector(".favorite-icon").addEventListener("click", async (e) => {
+      e.stopPropagation();
+      await fetch(`${API_URL}/${r._id}/favorite`, { method: "PUT" });
+      fetchRecipes();
+    });
+
+    card.addEventListener("click", () => openEditModal(r));
+
+    recipeContainer.appendChild(card);
   });
 }
 
-let allRecipes = [];
-let currentCategory = "all";
-let currentSort = "asc";
-let currentTitle = "";
-let currentIngredient = "";
-let filterFavorites = false;
-
-// --- Filtres combinatoires ---
-const combiFilterButtons = document.querySelectorAll(".combi-filter");
-let activeCombiFilters = [];
-
-// --- Pagination ---
-let currentPage = 1;
-const recipesPerPage = 12;
-
-// --- Notification ---
-function showNotification(message, type = "success") {
-  const notif = document.getElementById("notification");
-  notif.textContent = message;
-  notif.className = "";
-  notif.classList.add("show", type);
-  setTimeout(() => notif.classList.remove("show"), 3000);
-}
-
-// --- Rendu des recettes ---
-function renderRecipes(recipes) {
-  recipesContainer.innerHTML = "";
-  if (recipes.length === 0) {
-    recipesContainer.innerHTML = `<p>Aucune recette trouvée.</p>`;
-  } else {
-    const start = (currentPage - 1) * recipesPerPage;
-    const end = start + recipesPerPage;
-    const recipesToShow = recipes.slice(start, end);
-
-    recipesToShow.forEach(recipe => {
-      const card = document.createElement("div");
-      card.className = "recipe-card";
-      const favoriteHtml = recipe.favorite ? `<span class="favorite-icon">★</span>` : "";
-      card.innerHTML = `
-        ${recipe.image ? `<img src="${recipe.image}" alt="Image de ${recipe.title}">` : ""}
-        ${favoriteHtml}
-        <div class="card-content">
-          <h2>${recipe.title}</h2>
-          <p><strong>Catégorie :</strong> ${recipe.category}</p>
-          <p><strong>Temps :</strong> ${recipe.time}</p>
-          <h3>Ingrédients :</h3>
-          <ul>${recipe.ingredients.map(i => `<li>${i}</li>`).join("")}</ul>
-        </div>
-      `;
-      card.addEventListener("click", () => {
-        window.location.href = `recette.html?id=${recipe._id}`;
-      });
-      recipesContainer.appendChild(card);
-    });
-
-    renderPagination(recipes.length);
-  }
-  recipeCount.textContent = `${recipes.length} recette(s) trouvée(s)`;
-}
-
-// --- Pagination ---
-function renderPagination(totalRecipes) {
-  paginationContainer.innerHTML = "";
-  const totalPages = Math.ceil(totalRecipes / recipesPerPage);
-  if (totalPages <= 1) return;
-
-  for (let i = 1; i <= totalPages; i++) {
-    const btn = document.createElement("button");
-    btn.textContent = i;
-    btn.classList.toggle("active", i === currentPage);
-    btn.addEventListener("click", () => {
-      currentPage = i;
-      applyFiltersAndRender();
-    });
-    paginationContainer.appendChild(btn);
-  }
-}
-
-// --- Appliquer filtres et tri ---
 function applyFiltersAndRender() {
-  let filtered = [...allRecipes]; // ne jamais modifier allRecipes
-
-  // Filtre catégorie
-  if (currentCategory !== "all") filtered = filtered.filter(r => r.category === currentCategory);
-
-  // Filtre titre
-  if (currentTitle.trim() !== "") filtered = filtered.filter(r =>
-    r.title.toLowerCase().includes(currentTitle.toLowerCase())
-  );
-
-  // Filtre ingrédient
-  if (currentIngredient.trim() !== "") filtered = filtered.filter(r =>
-    r.ingredients.some(i => i.toLowerCase().includes(currentIngredient.toLowerCase()))
-  );
-
-  // Filtre favoris
-  if (filterFavorites) filtered = filtered.filter(r => r.favorite);
-
-  // Filtres combinatoires
-  activeCombiFilters.forEach(f => {
-    if (f === "gluten") {
-      filtered = filtered.filter(r =>
-        !r.ingredients.some(i =>
-          i.toLowerCase().includes("blé") ||
-          i.toLowerCase().includes("farine") ||
-          i.toLowerCase().includes("pâte")
-        )
-      );
-    }
-    if (f === "vege") {
-      filtered = filtered.filter(r =>
-        !r.ingredients.some(i =>
-          i.toLowerCase().includes("viande") ||
-          i.toLowerCase().includes("poulet") ||
-          i.toLowerCase().includes("poisson") ||
-          i.toLowerCase().includes("boeuf") ||
-          i.toLowerCase().includes("porc")
-        )
-      );
-    }
-    if (f === "grogros") {
-      filtered = filtered.filter(r => r.ingredients.length >= 8);
-    }
-  });
-
-  // Tri
-  if (currentSort === "asc") filtered.sort((a, b) => a.title.localeCompare(b.title));
-  else if (currentSort === "desc") filtered.sort((a, b) => b.title.localeCompare(a.title));
-  else if (currentSort === "newest") filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  else if (currentSort === "oldest") filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-
+  const filtered = getFilteredRecipes();
   renderRecipes(filtered);
 }
 
-// --- Récupérer les recettes ---
+// --- CRUD ---
 async function fetchRecipes() {
-  try {
-    const res = await fetch(API_URL);
-    allRecipes = await res.json();
-    applyFiltersAndRender();
-  } catch (err) {
-    console.error("Erreur:", err);
-    showNotification("Impossible de charger les recettes", "error");
-  }
+  const res = await fetch(API_URL);
+  recipes = await res.json();
+  applyFiltersAndRender();
 }
 
-// --- Événements ---
-addRecipeBtn.addEventListener("click", () => modal.style.display = "block");
-closeBtn.addEventListener("click", () => modal.style.display = "none");
-window.addEventListener("click", e => { if(e.target === modal) modal.style.display = "none"; });
+function openEditModal(r) {
+  openModal("Modifier Recette");
+  document.getElementById("title").value = r.title;
+  document.getElementById("category").value = r.category;
+  document.getElementById("time").value = r.time;
+  document.getElementById("ingredients").value = r.ingredients.join(", ");
+  document.getElementById("description").value = r.description;
+  document.getElementById("image").value = r.image || "";
+  favoriteCheckbox.checked = r.favorite;
+  modalFavoriteIcon.classList.toggle("active", r.favorite);
+  recipeForm.dataset.id = r._id;
+}
 
-form.addEventListener("submit", async e => {
+recipeForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const newRecipe = {
+  const id = recipeForm.dataset.id;
+  const body = {
     title: document.getElementById("title").value,
     category: document.getElementById("category").value,
     time: document.getElementById("time").value,
-    ingredients: document.getElementById("ingredients").value.split(",").map(i => i.trim()).filter(Boolean),
+    ingredients: document.getElementById("ingredients").value.split(",").map(i => i.trim()),
     description: document.getElementById("description").value,
     image: document.getElementById("image").value,
-    favorite: modalFavoriteCheckbox.checked
+    favorite: favoriteCheckbox.checked
   };
-
-  try {
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newRecipe)
-    });
-    if (res.ok) {
-      showNotification("Recette ajoutée !");
-      form.reset();
-      modal.style.display = "none";
-      modalFavoriteIcon.classList.remove("active");
-      fetchRecipes();
-    } else {
-      const data = await res.json();
-      showNotification(data.error || "Erreur lors de l'ajout", "error");
-    }
-  } catch (err) {
-    showNotification("Erreur serveur", "error");
+  if (id) {
+    await fetch(`${API_URL}/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  } else {
+    await fetch(API_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
   }
+  closeModalFunc();
+  fetchRecipes();
 });
 
-// --- Boutons catégorie ---
+// --- Event Listeners ---
+addRecipeBtn.addEventListener("click", () => {
+  recipeForm.dataset.id = "";
+  openModal("Ajouter Recette");
+});
+closeModal.addEventListener("click", closeModalFunc);
+window.addEventListener("click", (e) => { if (e.target === recipeModal) closeModalFunc(); });
+
+searchTitle.addEventListener("input", () => {
+  clearTitle.classList.toggle("show", searchTitle.value.length > 0);
+  applyFiltersAndRender();
+});
+clearTitle.addEventListener("click", () => {
+  searchTitle.value = "";
+  clearTitle.classList.remove("show");
+  applyFiltersAndRender();
+});
+
+searchIngredient.addEventListener("input", () => {
+  clearIngredient.classList.toggle("show", searchIngredient.value.length > 0);
+  applyFiltersAndRender();
+});
+clearIngredient.addEventListener("click", () => {
+  searchIngredient.value = "";
+  clearIngredient.classList.remove("show");
+  applyFiltersAndRender();
+});
+
 filters.forEach(btn => {
   btn.addEventListener("click", () => {
     filters.forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
-    currentCategory = btn.dataset.category;
-    currentPage = 1;
+    activeCategory = btn.dataset.category;
     applyFiltersAndRender();
   });
 });
 
-// --- Boutons tri ---
-sortButtons.forEach(btn => {
+combiFilters.forEach(btn => {
   btn.addEventListener("click", () => {
-    sortButtons.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    currentSort = btn.dataset.sort;
-    currentPage = 1;
-    applyFiltersAndRender();
-  });
-});
-
-// --- Bouton favoris ---
-favoriteFilterBtn.addEventListener("click", () => {
-  favoriteFilterBtn.classList.toggle("active");
-  filterFavorites = !filterFavorites;
-  currentPage = 1;
-  applyFiltersAndRender();
-});
-
-// --- Filtres combinatoires ---
-combiFilterButtons.forEach(btn => {
-  btn.addEventListener("click", () => {
-    btn.classList.toggle("active");
-    const filter = btn.dataset.filter;
-    if (btn.classList.contains("active")) {
-      if (!activeCombiFilters.includes(filter)) activeCombiFilters.push(filter);
+    const f = btn.dataset.filter;
+    if (activeCombiFilters.has(f)) {
+      activeCombiFilters.delete(f);
+      btn.classList.remove("active");
     } else {
-      activeCombiFilters = activeCombiFilters.filter(f => f !== filter);
+      activeCombiFilters.add(f);
+      btn.classList.add("active");
     }
-    currentPage = 1;
     applyFiltersAndRender();
   });
 });
 
-// --- Recherche ---
-titleInput.addEventListener("input", () => {
-  currentTitle = titleInput.value;
-  clearTitleBtn.classList.toggle("show", currentTitle.length > 0);
-  currentPage = 1;
-  applyFiltersAndRender();
-});
-clearTitleBtn.addEventListener("click", () => {
-  titleInput.value = "";
-  currentTitle = "";
-  clearTitleBtn.classList.remove("show");
-  applyFiltersAndRender();
+modalFavoriteIcon.addEventListener("click", () => {
+  favoriteCheckbox.checked = !favoriteCheckbox.checked;
+  modalFavoriteIcon.classList.toggle("active", favoriteCheckbox.checked);
 });
 
-ingredientInput.addEventListener("input", () => {
-  currentIngredient = ingredientInput.value;
-  clearIngredientBtn.classList.toggle("show", currentIngredient.length > 0);
-  currentPage = 1;
-  applyFiltersAndRender();
-});
-clearIngredientBtn.addEventListener("click", () => {
-  ingredientInput.value = "";
-  currentIngredient = "";
-  clearIngredientBtn.classList.remove("show");
-  applyFiltersAndRender();
-});
-
-// --- Initialisation ---
+// --- Init ---
 fetchRecipes();
-
