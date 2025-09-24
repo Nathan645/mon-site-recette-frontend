@@ -5,18 +5,17 @@ let activeCombiFilters = new Set();
 const API_URL = "http://localhost:3000/recipes";
 
 // --- DOM Elements ---
-const searchTitle = document.getElementById("search-title");
-const searchIngredient = document.getElementById("search-ingredient");
-const clearTitle = document.getElementById("clear-title");
-const clearIngredient = document.getElementById("clear-ingredient");
-const recipeContainer = document.getElementById("recipes-container");
+const searchInput = document.getElementById("search-input");
+const clearBtn = document.getElementById("clear-btn");
+const recipeContainer = document.getElementById("recipe-container");
 const addRecipeBtn = document.getElementById("add-recipe-btn");
 const recipeModal = document.getElementById("recipe-modal");
-const closeModal = document.querySelector(".close-btn");
+const closeModal = document.getElementById("close-modal");
 const recipeForm = document.getElementById("recipe-form");
 const modalTitle = document.getElementById("modal-title");
+const recipeIdInput = document.getElementById("recipe-id");
 const modalFavoriteIcon = document.getElementById("modal-favorite-icon");
-const favoriteCheckbox = document.getElementById("favorite-checkbox");
+const modalFavoriteWrapper = document.getElementById("modal-favorite");
 
 const filters = document.querySelectorAll(".category-buttons button[data-category]");
 const combiFilters = document.querySelectorAll(".combi-filter");
@@ -29,15 +28,14 @@ function openModal(title) {
 function closeModalFunc() {
   recipeModal.style.display = "none";
   recipeForm.reset();
-  favoriteCheckbox.checked = false;
+  recipeIdInput.value = "";
   modalFavoriteIcon.classList.remove("active");
 }
 function getFilteredRecipes() {
   let filtered = [...recipes];
-  const titleTerm = searchTitle.value.toLowerCase();
-  const ingredientTerm = searchIngredient.value.toLowerCase();
+  const searchTerm = searchInput.value.toLowerCase();
 
-  if (activeCategory && activeCategory !== "all") {
+  if (activeCategory) {
     filtered = filtered.filter(r => r.category === activeCategory);
   }
 
@@ -68,13 +66,11 @@ function getFilteredRecipes() {
     );
   }
 
-  if (titleTerm) {
-    filtered = filtered.filter(r => r.title.toLowerCase().includes(titleTerm));
-  }
-
-  if (ingredientTerm) {
+  if (searchTerm) {
     filtered = filtered.filter(r =>
-      r.ingredients.some(i => i.toLowerCase().includes(ingredientTerm))
+      r.title.toLowerCase().includes(searchTerm) ||
+      r.description.toLowerCase().includes(searchTerm) ||
+      r.ingredients.some(i => i.toLowerCase().includes(searchTerm))
     );
   }
 
@@ -128,20 +124,20 @@ async function fetchRecipes() {
 
 function openEditModal(r) {
   openModal("Modifier Recette");
+  recipeIdInput.value = r._id;
   document.getElementById("title").value = r.title;
   document.getElementById("category").value = r.category;
   document.getElementById("time").value = r.time;
   document.getElementById("ingredients").value = r.ingredients.join(", ");
   document.getElementById("description").value = r.description;
   document.getElementById("image").value = r.image || "";
-  favoriteCheckbox.checked = r.favorite;
-  modalFavoriteIcon.classList.toggle("active", r.favorite);
-  recipeForm.dataset.id = r._id;
+  if (r.favorite) modalFavoriteIcon.classList.add("active");
+  else modalFavoriteIcon.classList.remove("active");
 }
 
 recipeForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const id = recipeForm.dataset.id;
+  const id = recipeIdInput.value;
   const body = {
     title: document.getElementById("title").value,
     category: document.getElementById("category").value,
@@ -149,7 +145,7 @@ recipeForm.addEventListener("submit", async (e) => {
     ingredients: document.getElementById("ingredients").value.split(",").map(i => i.trim()),
     description: document.getElementById("description").value,
     image: document.getElementById("image").value,
-    favorite: favoriteCheckbox.checked
+    favorite: modalFavoriteIcon.classList.contains("active")
   };
   if (id) {
     await fetch(`${API_URL}/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
@@ -161,38 +157,30 @@ recipeForm.addEventListener("submit", async (e) => {
 });
 
 // --- Event Listeners ---
-addRecipeBtn.addEventListener("click", () => {
-  recipeForm.dataset.id = "";
-  openModal("Ajouter Recette");
-});
+addRecipeBtn.addEventListener("click", () => openModal("Ajouter Recette"));
 closeModal.addEventListener("click", closeModalFunc);
 window.addEventListener("click", (e) => { if (e.target === recipeModal) closeModalFunc(); });
 
-searchTitle.addEventListener("input", () => {
-  clearTitle.classList.toggle("show", searchTitle.value.length > 0);
+searchInput.addEventListener("input", () => {
+  clearBtn.classList.toggle("show", searchInput.value.length > 0);
   applyFiltersAndRender();
 });
-clearTitle.addEventListener("click", () => {
-  searchTitle.value = "";
-  clearTitle.classList.remove("show");
-  applyFiltersAndRender();
-});
-
-searchIngredient.addEventListener("input", () => {
-  clearIngredient.classList.toggle("show", searchIngredient.value.length > 0);
-  applyFiltersAndRender();
-});
-clearIngredient.addEventListener("click", () => {
-  searchIngredient.value = "";
-  clearIngredient.classList.remove("show");
+clearBtn.addEventListener("click", () => {
+  searchInput.value = "";
+  clearBtn.classList.remove("show");
   applyFiltersAndRender();
 });
 
 filters.forEach(btn => {
   btn.addEventListener("click", () => {
-    filters.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    activeCategory = btn.dataset.category;
+    if (activeCategory === btn.dataset.category) {
+      activeCategory = null;
+      btn.classList.remove("active");
+    } else {
+      filters.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      activeCategory = btn.dataset.category;
+    }
     applyFiltersAndRender();
   });
 });
@@ -211,9 +199,8 @@ combiFilters.forEach(btn => {
   });
 });
 
-modalFavoriteIcon.addEventListener("click", () => {
-  favoriteCheckbox.checked = !favoriteCheckbox.checked;
-  modalFavoriteIcon.classList.toggle("active", favoriteCheckbox.checked);
+modalFavoriteWrapper.addEventListener("click", () => {
+  modalFavoriteIcon.classList.toggle("active");
 });
 
 // --- Init ---
