@@ -1,5 +1,3 @@
-/ Index
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -17,7 +15,7 @@
     <button id="add-recipe-btn" aria-label="Ajouter une nouvelle recette">+ Nouvelle recette</button>
 
     <div class="controls">
-      <!-- 1) Barre de recherche -->
+      <!-- Barre de recherche -->
       <div class="search-bar-container">
         <div class="search-wrapper">
           <input type="text" id="search-title" placeholder="Rechercher par titre..." aria-label="Rechercher par titre">
@@ -29,26 +27,31 @@
         </div>
       </div>
 
-      <!-- 2) Boutons de catégories -->
-      <div class="category-buttons filters-inline">
-        <button data-category="all" class="active">Toutes</button>
-        <button data-category="Plat">Plats</button>
-        <button data-category="Dessert">Desserts</button>
-        <button data-category="Entrée">Entrées</button>
-        <button data-category="Snack">Snacks</button>
-        <button data-category="Cocktail">Cocktails</button>
+      <!-- Filtres de catégorie et favoris -->
+      <!-- Filtres -->
+      <div id="filters">
+        <div class="category-buttons">
+          <button data-category="all" class="active">Toutes</button>
+          <button data-category="Plat">Plats</button>
+          <button data-category="Dessert">Desserts</button>
+          <button data-category="Entrée">Entrées</button>
+          <button data-category="Snack">Snacks</button>
+          <button data-category="Cocktail">Cocktails</button>
+        </div>
+
+        <div class="favorite-button-container">
+          <button id="filter-favorite">Favoris</button>
+        </div>
+
+        <div class="additional-filters">
+          <button class="combi-filter" data-filter="gluten">Gluten free</button>
+          <button class="combi-filter" data-filter="vege">Végé</button>
+          <button class="combi-filter" data-filter="grogros">Grogros</button>
+        </div>
       </div>
 
-      <!-- 3) Boutons Favoris + filtres combinatoires -->
-      <div class="filters-inline combi-filters">
-        <button id="filter-favorite">Favoris</button>
-        <button class="combi-filter" data-filter="gluten">Gluten free</button>
-        <button class="combi-filter" data-filter="vege">Végé</button>
-        <button class="combi-filter" data-filter="grogros">Grogros</button>
-      </div>
-
-      <!-- 4) Boutons de tri -->
-      <div class="sort-controls filters-inline">
+      <!-- Boutons de tri -->
+      <div class="sort-controls">
         <button data-sort="asc" class="sort-btn active">A→Z</button>
         <button data-sort="desc" class="sort-btn">Z→A</button>
         <button data-sort="newest" class="sort-btn">Plus récente</button>
@@ -61,9 +64,11 @@
 </header>
 
 <main id="recipes-container"></main>
+
+<!-- Pagination -->
 <div id="pagination"></div>
 
-<!-- Modal ajout recette -->
+<!-- Modal pour ajouter une recette -->
 <div id="recipe-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal-content">
     <span class="close-btn" role="button" aria-label="Fermer la modale">&times;</span>
@@ -107,4 +112,3 @@
 <script src="script.js"></script>
 </body>
 </html>
-
