@@ -5,8 +5,10 @@ let activeCombiFilters = new Set();
 const API_URL = "http://localhost:3000/recipes";
 
 // --- DOM Elements ---
-const searchInput = document.getElementById("search-input");
-const clearBtn = document.getElementById("clear-btn");
+const searchTitleInput = document.getElementById("search-title");
+const searchIngredientInput = document.getElementById("search-ingredient");
+const clearTitleBtn = document.getElementById("clear-title");
+const clearIngredientBtn = document.getElementById("clear-ingredient");
 const recipeContainer = document.getElementById("recipe-container");
 const addRecipeBtn = document.getElementById("add-recipe-btn");
 const recipeModal = document.getElementById("recipe-modal");
@@ -33,7 +35,9 @@ function closeModalFunc() {
 }
 function getFilteredRecipes() {
   let filtered = [...recipes];
-  const searchTerm = searchInput.value.toLowerCase();
+
+  const titleTerm = searchTitleInput.value.toLowerCase();
+  const ingredientTerm = searchIngredientInput.value.toLowerCase();
 
   if (activeCategory) {
     filtered = filtered.filter(r => r.category === activeCategory);
@@ -66,11 +70,15 @@ function getFilteredRecipes() {
     );
   }
 
-  if (searchTerm) {
+  if (titleTerm) {
     filtered = filtered.filter(r =>
-      r.title.toLowerCase().includes(searchTerm) ||
-      r.description.toLowerCase().includes(searchTerm) ||
-      r.ingredients.some(i => i.toLowerCase().includes(searchTerm))
+      r.title.toLowerCase().includes(titleTerm)
+    );
+  }
+
+  if (ingredientTerm) {
+    filtered = filtered.filter(r =>
+      r.ingredients.some(i => i.toLowerCase().includes(ingredientTerm))
     );
   }
 
@@ -161,13 +169,23 @@ addRecipeBtn.addEventListener("click", () => openModal("Ajouter Recette"));
 closeModal.addEventListener("click", closeModalFunc);
 window.addEventListener("click", (e) => { if (e.target === recipeModal) closeModalFunc(); });
 
-searchInput.addEventListener("input", () => {
-  clearBtn.classList.toggle("show", searchInput.value.length > 0);
+searchTitleInput.addEventListener("input", () => {
+  clearTitleBtn.classList.toggle("show", searchTitleInput.value.length > 0);
   applyFiltersAndRender();
 });
-clearBtn.addEventListener("click", () => {
-  searchInput.value = "";
-  clearBtn.classList.remove("show");
+clearTitleBtn.addEventListener("click", () => {
+  searchTitleInput.value = "";
+  clearTitleBtn.classList.remove("show");
+  applyFiltersAndRender();
+});
+
+searchIngredientInput.addEventListener("input", () => {
+  clearIngredientBtn.classList.toggle("show", searchIngredientInput.value.length > 0);
+  applyFiltersAndRender();
+});
+clearIngredientBtn.addEventListener("click", () => {
+  searchIngredientInput.value = "";
+  clearIngredientBtn.classList.remove("show");
   applyFiltersAndRender();
 });
 
