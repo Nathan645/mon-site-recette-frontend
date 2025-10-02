@@ -7,6 +7,7 @@ header { background:#ff7043; color:white; padding:20px; }
 
 .controls { display: flex; flex-direction: column; gap: 10px; }
 
+/* --- Barre de recherche --- */
 .search-bar-container { display: flex; gap: 10px; width: 100%; }
 .search-wrapper { flex: 1; position: relative; }
 .search-wrapper input { padding: 10px 12px; border-radius: 6px; border: none; width: 100%; padding-right: 35px; font-size: 15px; }
@@ -15,9 +16,10 @@ header { background:#ff7043; color:white; padding:20px; }
 .clear-btn.show { opacity:1; pointer-events:auto; }
 .clear-btn:hover { background:#ff7043; }
 
+/* --- Filtres et tris --- */
 #filters, .sort-controls { display:flex; flex-direction:column; gap:8px; margin-top:10px; }
 
-.category-buttons, .favorite-button-container, .additional-filters {
+.category-buttons, .favorite-button-container, .additional-filters, .sort-controls {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -32,6 +34,8 @@ header { background:#ff7043; color:white; padding:20px; }
   cursor:pointer;
   transition:0.3s;
   font-size:15px;
+  min-width:120px; /* homogénéité */
+  text-align:center;
 }
 
 #filters button.active, .sort-controls .sort-btn.active, #filter-favorite.active, .additional-filters button.active {
@@ -40,9 +44,11 @@ header { background:#ff7043; color:white; padding:20px; }
   font-weight:bold;
 }
 
+/* --- Bouton ajout recette --- */
 #add-recipe-btn { position: absolute; top: 5px; right: 20px; padding: 10px 18px; background: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 3px 6px rgba(0,0,0,0.15); transition: background 0.3s, transform 0.2s; }
 #add-recipe-btn:hover { background: #45a049; transform: scale(1.05); }
 
+/* --- Cartes --- */
 main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:20px; }
 
 .recipe-card { background:white; border-radius:10px; padding:0; overflow:hidden; position:relative; box-shadow:0 5px 15px rgba(0,0,0,0.1); transition:transform 0.3s, box-shadow 0.3s; cursor:pointer; }
