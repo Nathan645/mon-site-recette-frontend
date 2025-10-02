@@ -19,13 +19,13 @@ header { background:#ff7043; color:white; padding:20px; }
 /* --- Filtres et tris --- */
 #filters, .sort-controls { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
 
-.category-buttons, .favorite-button-container, .sort-controls {
+.category-buttons, .favorite-button-container, .additional-filters, .sort-controls {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-#filters button, .sort-controls .sort-btn, #filter-favorite {
+#filters button, .sort-controls .sort-btn, #filter-favorite, .additional-filters button {
   padding:10px 14px;
   border:none;
   border-radius:5px;
@@ -34,11 +34,11 @@ header { background:#ff7043; color:white; padding:20px; }
   cursor:pointer;
   transition:0.3s;
   font-size:15px;
-  min-width:140px; /* même largeur */
+  min-width:140px; /* même largeur que Favoris */
   text-align:center;
 }
 
-#filters button.active, .sort-controls .sort-btn.active, #filter-favorite.active {
+#filters button.active, .sort-controls .sort-btn.active, #filter-favorite.active, .additional-filters button.active {
   background:white;
   color:#ff7043;
   font-weight:bold;
@@ -48,25 +48,17 @@ header { background:#ff7043; color:white; padding:20px; }
 #add-recipe-btn { position: absolute; top: 5px; right: 20px; padding: 10px 18px; background: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 3px 6px rgba(0,0,0,0.15); transition: background 0.3s, transform 0.2s; }
 #add-recipe-btn:hover { background: #45a049; transform: scale(1.05); }
 
-/* --- Cartes --- */
+/* --- Main & cartes --- */
 main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:20px; }
 
 .recipe-card { background:white; border-radius:10px; padding:0; overflow:hidden; position:relative; box-shadow:0 5px 15px rgba(0,0,0,0.1); transition:transform 0.3s, box-shadow 0.3s; cursor:pointer; }
 .recipe-card:hover { transform:scale(1.03); box-shadow:0 12px 24px rgba(0,0,0,0.2); }
-
 .recipe-card img { width:100%; display:block; }
 .recipe-card .card-content { padding:15px; }
 .recipe-card .card-content h2 { margin:0 0 10px 0; }
 .recipe-card .card-content ul { padding-left:20px; margin:0; }
 .recipe-card .card-content p { margin:5px 0; }
-
-.recipe-card .favorite-icon {
-  position: absolute;
-  top:10px;
-  right:10px;
-  font-size:24px;
-  color: gold;
-}
+.recipe-card .favorite-icon { position: absolute; top:10px; right:10px; font-size:24px; color: gold; }
 
 /* --- Modal --- */
 .modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background:rgba(0,0,0,0.5); }
@@ -83,23 +75,9 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 .modal-favorite .favorite-icon { font-size:24px; color: grey; transition: color 0.3s; }
 .modal-favorite .favorite-icon.active { color: gold; }
 
-/* --- Detail page --- */
-.detail-page { max-width: 1000px; margin: 20px auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-.detail-page img { width: 100%; border-radius: 10px; margin-bottom: 20px; }
-.detail-page h2, .detail-page h3 { margin-top: 15px; }
-
-#back-btn { display: inline-block; margin-bottom: 20px; padding: 10px 18px; background: #ff7043; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 3px 6px rgba(0,0,0,0.15); transition: background 0.3s, transform 0.2s; }
-#back-btn:hover { background: #f4511e; transform: scale(1.05); }
-
-.actions { display:flex; gap:10px; margin-top:20px; }
-.actions button { padding:10px 15px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; transition:0.3s; }
-#edit-btn { background:#ffb74d; color:white; }
-#edit-btn:hover { background:#ffa726; }
-#delete-btn { background:#e57373; color:white; }
-#delete-btn:hover { background:#f44336; }
-
-.detail-page .favorite-icon { position: absolute; top:10px; right:10px; font-size:24px; color: grey; transition: color 0.3s; }
-.detail-page .favorite-icon.active { color: gold; }
+.modal-combi-filters { display:flex; gap:10px; margin-bottom:15px; align-items:center; }
+.modal-combi-filters label { color:black; font-size:14px; cursor:pointer; }
+.modal-combi-filters input[type=checkbox] { margin-right:5px; }
 
 /* --- Notification --- */
 #notification { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); padding: 12px 20px; border-radius: 6px; font-weight: bold; color: white; box-shadow: 0 3px 6px rgba(0,0,0,0.15); opacity: 0; pointer-events: none; transition: opacity 0.5s ease, top 0.5s ease; z-index: 2000; }
@@ -109,33 +87,7 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 #notification.error { background: #f44336; }
 
 /* --- Pagination --- */
-#pagination {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin: 20px 0;
-  flex-wrap: wrap;
-}
-
-#pagination button {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 6px;
-  background: rgba(255,255,255,0.2);
-  color: #ff7043;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background 0.3s, color 0.3s;
-}
-
-#pagination button:hover {
-  background: #ff7043;
-  color: white;
-}
-
-#pagination button.active {
-  background: #ff7043;
-  color: white;
-  font-weight: bold;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-}
+#pagination { display:flex; justify-content:center; gap:8px; margin:20px 0; flex-wrap:wrap; }
+#pagination button { padding:8px 12px; border:none; border-radius:6px; background: rgba(255,255,255,0.2); color:#ff7043; cursor:pointer; font-weight:bold; transition: background 0.3s, color 0.3s; }
+#pagination button:hover { background:#ff7043; color:white; }
+#pagination button.active { background:#ff7043; color:white; font-weight:bold; box-shadow:0 3px 6px rgba(0,0,0,0.15); }

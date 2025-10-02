@@ -5,7 +5,7 @@ const addRecipeBtn = document.getElementById("add-recipe-btn");
 const modal = document.getElementById("recipe-modal");
 const closeBtn = document.querySelector(".close-btn");
 const form = document.getElementById("recipe-form");
-const filters = document.querySelectorAll("#filters button[data-category]"); 
+const filters = document.querySelectorAll("#filters button[data-category]");
 const recipeCount = document.getElementById("recipe-count");
 const sortButtons = document.querySelectorAll(".sort-btn");
 const favoriteFilterBtn = document.getElementById("filter-favorite");
@@ -18,19 +18,13 @@ const clearIngredientBtn = document.getElementById("clear-ingredient");
 const modalFavoriteIcon = document.getElementById("modal-favorite-icon");
 const modalFavoriteCheckbox = document.getElementById("favorite-checkbox");
 
-const paginationContainer = document.createElement("div");
-paginationContainer.id = "pagination";
-paginationContainer.style.display = "flex";
-paginationContainer.style.justifyContent = "center";
-paginationContainer.style.marginTop = "20px";
-recipesContainer.parentNode.appendChild(paginationContainer);
+// Checkbox filtres combinatoires modale
+const modalGluten = document.getElementById("modal-gluten");
+const modalVege = document.getElementById("modal-vege");
+const modalGrogros = document.getElementById("modal-grogros");
 
-if (modalFavoriteIcon && modalFavoriteCheckbox) {
-  modalFavoriteIcon.addEventListener("click", () => {
-    modalFavoriteIcon.classList.toggle("active");
-    modalFavoriteCheckbox.checked = modalFavoriteIcon.classList.contains("active");
-  });
-}
+const combiFilterButtons = document.querySelectorAll(".combi-filter");
+let activeCombiFilters = [];
 
 let allRecipes = [];
 let currentCategory = "all";
@@ -39,14 +33,10 @@ let currentTitle = "";
 let currentIngredient = "";
 let filterFavorites = false;
 
-// Nouveaux filtres combinatoires
-const combiFilterButtons = document.querySelectorAll(".combi-filter");
-let activeCombiFilters = [];
-
-// --- Pagination ---
 let currentPage = 1;
-const recipesPerPage = 12; // cartes par page
+const recipesPerPage = 12;
 
+// --- Notification ---
 function showNotification(message, type = "success") {
   const notif = document.getElementById("notification");
   notif.textContent = message;
@@ -55,44 +45,55 @@ function showNotification(message, type = "success") {
   setTimeout(() => notif.classList.remove("show"), 3000);
 }
 
-// Afficher les recettes
+// --- Toggle favori modal ---
+if (modalFavoriteIcon && modalFavoriteCheckbox) {
+  modalFavoriteIcon.addEventListener("click", () => {
+    modalFavoriteIcon.classList.toggle("active");
+    modalFavoriteCheckbox.checked = modalFavoriteIcon.classList.contains("active");
+  });
+}
+
+// --- Render recettes ---
 function renderRecipes(recipes) {
   recipesContainer.innerHTML = "";
   if (recipes.length === 0) {
-    recipesContainer.innerHTML = `<p>Aucune recette trouvée.</p>`;
-  } else {
-    const start = (currentPage - 1) * recipesPerPage;
-    const end = start + recipesPerPage;
-    const recipesToShow = recipes.slice(start, end);
-
-    recipesToShow.forEach(recipe => {
-      const card = document.createElement("div");
-      card.className = "recipe-card";
-      const favoriteHtml = recipe.favorite ? `<span class="favorite-icon">★</span>` : "";
-      card.innerHTML = `
-        ${recipe.image ? `<img src="${recipe.image}" alt="Image de ${recipe.title}">` : ""}
-        ${favoriteHtml}
-        <div class="card-content">
-          <h2>${recipe.title}</h2>
-          <p><strong>Catégorie :</strong> ${recipe.category}</p>
-          <p><strong>Temps :</strong> ${recipe.time}</p>
-          <h3>Ingrédients :</h3>
-          <ul>${recipe.ingredients.map(i => `<li>${i}</li>`).join("")}</ul>
-        </div>
-      `;
-      card.addEventListener("click", () => {
-        window.location.href = `recette.html?id=${recipe._id}`;
-      });
-      recipesContainer.appendChild(card);
-    });
-
-    renderPagination(recipes.length);
+    recipesContainer.innerHTML = "<p>Aucune recette trouvée.</p>";
+    recipeCount.textContent = "0 recette(s) trouvée(s)";
+    return;
   }
+
+  const start = (currentPage - 1) * recipesPerPage;
+  const end = start + recipesPerPage;
+  const recipesToShow = recipes.slice(start, end);
+
+  recipesToShow.forEach(recipe => {
+    const card = document.createElement("div");
+    card.className = "recipe-card";
+    const favoriteHtml = recipe.favorite ? `<span class="favorite-icon">★</span>` : "";
+    card.innerHTML = `
+      ${recipe.image ? `<img src="${recipe.image}" alt="Image de ${recipe.title}">` : ""}
+      ${favoriteHtml}
+      <div class="card-content">
+        <h2>${recipe.title}</h2>
+        <p><strong>Catégorie :</strong> ${recipe.category}</p>
+        <p><strong>Temps :</strong> ${recipe.time}</p>
+        <h3>Ingrédients :</h3>
+        <ul>${recipe.ingredients.map(i => `<li>${i}</li>`).join("")}</ul>
+      </div>
+    `;
+    card.addEventListener("click", () => {
+      window.location.href = `recette.html?id=${recipe._id}`;
+    });
+    recipesContainer.appendChild(card);
+  });
+
+  renderPagination(recipes.length);
   recipeCount.textContent = `${recipes.length} recette(s) trouvée(s)`;
 }
 
-// Générer la pagination
+// --- Pagination ---
 function renderPagination(totalRecipes) {
+  const paginationContainer = document.getElementById("pagination");
   paginationContainer.innerHTML = "";
   const totalPages = Math.ceil(totalRecipes / recipesPerPage);
   if (totalPages <= 1) return;
@@ -109,7 +110,7 @@ function renderPagination(totalRecipes) {
   }
 }
 
-// Appliquer filtres + tri
+// --- Appliquer filtres et tri ---
 function applyFiltersAndRender() {
   let filtered = [...allRecipes];
 
@@ -157,49 +158,39 @@ function applyFiltersAndRender() {
         );
       }
       if (f === "grogros") {
-        filtered = filtered.filter(r =>
-          r.ingredients.length >= 8
-        );
+        filtered = filtered.filter(r => r.ingredients.length >= 8);
       }
     });
   }
 
-  if (currentSort === "asc") {
-    filtered.sort((a, b) => a.title.localeCompare(b.title));
-  } else if (currentSort === "desc") {
-    filtered.sort((a, b) => b.title.localeCompare(a.title));
-  } else if (currentSort === "newest") {
-    filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  } else if (currentSort === "oldest") {
-    filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-  }
+  // tri
+  if (currentSort === "asc") filtered.sort((a, b) => a.title.localeCompare(b.title));
+  else if (currentSort === "desc") filtered.sort((a, b) => b.title.localeCompare(a.title));
+  else if (currentSort === "newest") filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  else if (currentSort === "oldest") filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
   renderRecipes(filtered);
 }
 
-// Récupérer les recettes
+// --- Récupérer recettes ---
 async function fetchRecipes() {
   try {
     const res = await fetch(API_URL);
     allRecipes = await res.json();
     applyFiltersAndRender();
   } catch (err) {
-    console.error("Erreur:", err);
+    console.error(err);
     showNotification("Impossible de charger les recettes", "error");
   }
 }
 
 // --- Événements ---
-addRecipeBtn.addEventListener("click", () => {
-  modal.style.display = "block";
-});
-closeBtn.addEventListener("click", () => {
-  modal.style.display = "none";
-});
-window.addEventListener("click", e => {
-  if (e.target === modal) modal.style.display = "none";
-});
+// ouverture modal
+addRecipeBtn.addEventListener("click", () => { modal.style.display = "block"; });
+closeBtn.addEventListener("click", () => { modal.style.display = "none"; });
+window.addEventListener("click", e => { if (e.target === modal) modal.style.display = "none"; });
 
+// ajout recette
 form.addEventListener("submit", async e => {
   e.preventDefault();
   const newRecipe = {
@@ -209,9 +200,11 @@ form.addEventListener("submit", async e => {
     ingredients: document.getElementById("ingredients").value.split(",").map(i => i.trim()).filter(Boolean),
     description: document.getElementById("description").value,
     image: document.getElementById("image").value,
-    favorite: modalFavoriteCheckbox.checked
+    favorite: modalFavoriteCheckbox.checked,
+    gluten: modalGluten.checked,
+    vege: modalVege.checked,
+    grogros: modalGrogros.checked
   };
-
   try {
     const res = await fetch(API_URL, {
       method: "POST",
@@ -221,8 +214,8 @@ form.addEventListener("submit", async e => {
     if (res.ok) {
       showNotification("Recette ajoutée !");
       form.reset();
-      modal.style.display = "none";
       modalFavoriteIcon.classList.remove("active");
+      modal.style.display = "none";
       fetchRecipes();
     } else {
       const data = await res.json();
@@ -233,6 +226,7 @@ form.addEventListener("submit", async e => {
   }
 });
 
+// filtres catégories
 filters.forEach(btn => {
   btn.addEventListener("click", () => {
     filters.forEach(b => b.classList.remove("active"));
@@ -243,15 +237,7 @@ filters.forEach(btn => {
   });
 });
 
-sortButtons.forEach(btn => {
-  btn.addEventListener("click", () => {
-    sortButtons.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    currentSort = btn.dataset.sort;
-    applyFiltersAndRender();
-  });
-});
-
+// filtres favoris
 favoriteFilterBtn.addEventListener("click", () => {
   favoriteFilterBtn.classList.toggle("active");
   filterFavorites = !filterFavorites;
@@ -264,16 +250,14 @@ combiFilterButtons.forEach(btn => {
   btn.addEventListener("click", () => {
     btn.classList.toggle("active");
     const filter = btn.dataset.filter;
-    if (btn.classList.contains("active")) {
-      activeCombiFilters.push(filter);
-    } else {
-      activeCombiFilters = activeCombiFilters.filter(f => f !== filter);
-    }
+    if (btn.classList.contains("active")) activeCombiFilters.push(filter);
+    else activeCombiFilters = activeCombiFilters.filter(f => f !== filter);
     currentPage = 1;
     applyFiltersAndRender();
   });
 });
 
+// recherche titre
 titleInput.addEventListener("input", () => {
   currentTitle = titleInput.value;
   clearTitleBtn.classList.toggle("show", currentTitle.length > 0);
@@ -287,6 +271,7 @@ clearTitleBtn.addEventListener("click", () => {
   applyFiltersAndRender();
 });
 
+// recherche ingrédient
 ingredientInput.addEventListener("input", () => {
   currentIngredient = ingredientInput.value;
   clearIngredientBtn.classList.toggle("show", currentIngredient.length > 0);
@@ -300,4 +285,16 @@ clearIngredientBtn.addEventListener("click", () => {
   applyFiltersAndRender();
 });
 
+// tri
+sortButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    sortButtons.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentSort = btn.dataset.sort;
+    currentPage = 1;
+    applyFiltersAndRender();
+  });
+});
+
+// récupération initiale
 fetchRecipes();

@@ -28,7 +28,6 @@
       </div>
 
       <!-- Filtres de catégorie et favoris -->
-      <!-- Filtres -->
       <div id="filters">
         <div class="category-buttons">
           <button data-category="all" class="active">Toutes</button>
@@ -104,7 +103,62 @@
         <input type="checkbox" id="favorite-checkbox" hidden>
       </div>
 
+      <!-- Filtres combinatoires modal -->
+      <div class="modal-combi-filters">
+        <label><input type="checkbox" id="modal-gluten"> Gluten free</label>
+        <label><input type="checkbox" id="modal-vege"> Végé</label>
+        <label><input type="checkbox" id="modal-grogros"> Grogros</label>
+      </div>
+
       <button type="submit">Ajouter</button>
+    </form>
+  </div>
+</div>
+
+<!-- Modal modification -->
+<div id="edit-recipe-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
+  <div class="modal-content">
+    <span class="close-btn" role="button" aria-label="Fermer la modale">&times;</span>
+    <h2 id="edit-modal-title">Modifier recette</h2>
+    <form id="edit-recipe-form">
+      <label for="edit-title">Titre</label>
+      <input type="text" id="edit-title" required>
+
+      <label for="edit-category">Catégorie</label>
+      <select id="edit-category" required>
+        <option value="Plat">Plats</option>
+        <option value="Dessert">Desserts</option>
+        <option value="Entrée">Entrées</option>
+        <option value="Snack">Snacks</option>
+        <option value="Cocktail">Cocktails</option>
+      </select>
+
+      <label for="edit-time">Temps</label>
+      <input type="text" id="edit-time" required>
+
+      <label for="edit-ingredients">Ingrédients (séparés par des virgules)</label>
+      <textarea id="edit-ingredients" required></textarea>
+
+      <label for="edit-description">Description</label>
+      <textarea id="edit-description" required></textarea>
+
+      <label for="edit-image">Image (URL, optionnelle)</label>
+      <input type="url" id="edit-image">
+
+      <div class="modal-favorite">
+        <span id="edit-modal-favorite-icon" class="favorite-icon">★</span>
+        <span>Favori</span>
+        <input type="checkbox" id="edit-favorite-checkbox" hidden>
+      </div>
+
+      <!-- Filtres combinatoires modal -->
+      <div class="modal-combi-filters">
+        <label><input type="checkbox" id="edit-modal-gluten"> Gluten free</label>
+        <label><input type="checkbox" id="edit-modal-vege"> Végé</label>
+        <label><input type="checkbox" id="edit-modal-grogros"> Grogros</label>
+      </div>
+
+      <button type="submit">Modifier</button>
     </form>
   </div>
 </div>
