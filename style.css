@@ -17,15 +17,15 @@ header { background:#ff7043; color:white; padding:20px; }
 .clear-btn:hover { background:#ff7043; }
 
 /* --- Filtres et tris --- */
-#filters, .sort-controls { display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+#filters, .sort-controls { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
 
-.category-buttons, .favorite-button-container, .additional-filters, .sort-controls {
+.category-buttons, .favorite-button-container, .sort-controls {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-#filters button, .sort-controls .sort-btn, #filter-favorite, .additional-filters button {
+#filters button, .sort-controls .sort-btn, #filter-favorite {
   padding:10px 14px;
   border:none;
   border-radius:5px;
@@ -34,11 +34,11 @@ header { background:#ff7043; color:white; padding:20px; }
   cursor:pointer;
   transition:0.3s;
   font-size:15px;
-  min-width:120px; /* homogénéité */
+  min-width:140px; /* même largeur */
   text-align:center;
 }
 
-#filters button.active, .sort-controls .sort-btn.active, #filter-favorite.active, .additional-filters button.active {
+#filters button.active, .sort-controls .sort-btn.active, #filter-favorite.active {
   background:white;
   color:#ff7043;
   font-weight:bold;
@@ -107,13 +107,6 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 #notification.success { background: #4CAF50; }
 #notification.warning { background: #ff9800; }
 #notification.error { background: #f44336; }
-
-/* --- Modal suppression --- */
-#delete-modal .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-#cancel-delete { background: #ccc; color: black; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; }
-#cancel-delete:hover { background: #bbb; }
-#confirm-delete { background: #e57373; color: white; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; }
-#confirm-delete:hover { background: #f44336; }
 
 /* --- Pagination --- */
 #pagination {
