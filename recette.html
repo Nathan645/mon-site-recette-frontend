@@ -65,6 +65,13 @@
         <input type="checkbox" id="edit-favorite-checkbox" hidden>
       </div>
 
+      <!-- Filtres combinatoires modal (édition) -->
+      <div class="modal-combi-filters">
+        <label><input type="checkbox" id="edit-modal-gluten"> Gluten free</label>
+        <label><input type="checkbox" id="edit-modal-vege"> Végé</label>
+        <label><input type="checkbox" id="edit-modal-grogros"> Grogros</label>
+      </div>
+
       <button type="submit">Modifier</button>
     </form>
   </div>
@@ -99,6 +106,11 @@ const favoriteIcon = document.getElementById("detail-favorite-icon");
 const modalFavoriteIcon = document.getElementById("edit-modal-favorite-icon");
 const favoriteCheckbox = document.getElementById("edit-favorite-checkbox");
 
+// nouveaux checkboxes edition
+const editModalGluten = document.getElementById("edit-modal-gluten");
+const editModalVege = document.getElementById("edit-modal-vege");
+const editModalGrogros = document.getElementById("edit-modal-grogros");
+
 let recipe = null;
 
 // Notification
@@ -108,6 +120,24 @@ function showNotification(message, type="success"){
   notif.className="";
   notif.classList.add("show",type);
   setTimeout(()=>notif.classList.remove("show"),3000);
+}
+
+// fallback detection helpers (même logique que le front index)
+function detectGlutenFree(r){
+  if (typeof r.gluten === 'boolean') return r.gluten;
+  if (!Array.isArray(r.ingredients)) return false;
+  const txt = r.ingredients.join(" ").toLowerCase();
+  return !(/blé|farine|pâte|wheat|flour|orge|rye|seigle|barley/.test(txt));
+}
+function detectVege(r){
+  if (typeof r.vege === 'boolean') return r.vege;
+  if (!Array.isArray(r.ingredients)) return false;
+  const txt = r.ingredients.join(" ").toLowerCase();
+  return !(/viande|poulet|poisson|boeuf|porc|agneau|bacon|jambon|saucisse/.test(txt));
+}
+function detectGrogros(r){
+  if (typeof r.grogros === 'boolean') return r.grogros;
+  return Array.isArray(r.ingredients) && r.ingredients.length >= 8;
 }
 
 // Charger la recette
@@ -137,9 +167,15 @@ function populateDetail(){
   document.getElementById("recipe-description").innerHTML = recipe.description.replace(/\n/g,"<br>");
   document.getElementById("recipe-ingredients").innerHTML = Array.isArray(recipe.ingredients)? recipe.ingredients.map(i=>`<li>${i}</li>`).join("") : "";
 
+  // favoris
   favoriteIcon.classList.toggle("active", recipe.favorite);
   modalFavoriteIcon.classList.toggle("active", recipe.favorite);
-  favoriteCheckbox.checked = recipe.favorite;
+  favoriteCheckbox.checked = !!recipe.favorite;
+
+  // flags combinatoires (édition) -> si champ absent, on détecte depuis ingrédients
+  editModalGluten.checked = (typeof recipe.gluten === 'boolean') ? recipe.gluten : detectGlutenFree(recipe);
+  editModalVege.checked = (typeof recipe.vege === 'boolean') ? recipe.vege : detectVege(recipe);
+  editModalGrogros.checked = (typeof recipe.grogros === 'boolean') ? recipe.grogros : detectGrogros(recipe);
 }
 
 // Retour
@@ -184,7 +220,7 @@ confirmDeleteBtn.addEventListener("click", async ()=>{
   }
 });
 
-// Modifier
+// Modifier -> ouvrir modal et préremplir
 document.getElementById("edit-btn").addEventListener("click",()=>{
   modal.style.display="block";
   form["edit-title"].value = recipe.title;
@@ -194,7 +230,12 @@ document.getElementById("edit-btn").addEventListener("click",()=>{
   form["edit-description"].value = recipe.description;
   form["edit-image"].value = recipe.image||"";
   modalFavoriteIcon.classList.toggle("active", recipe.favorite);
-  favoriteCheckbox.checked = recipe.favorite;
+  favoriteCheckbox.checked = !!recipe.favorite;
+
+  // Préremplir les checkboxes d'édition
+  editModalGluten.checked = (typeof recipe.gluten === 'boolean') ? recipe.gluten : detectGlutenFree(recipe);
+  editModalVege.checked = (typeof recipe.vege === 'boolean') ? recipe.vege : detectVege(recipe);
+  editModalGrogros.checked = (typeof recipe.grogros === 'boolean') ? recipe.grogros : detectGrogros(recipe);
 });
 
 closeBtn.addEventListener("click",()=>modal.style.display="none");
@@ -207,10 +248,13 @@ form.addEventListener("submit", async (e)=>{
     title: form["edit-title"].value,
     category: form["edit-category"].value,
     time: form["edit-time"].value,
-    ingredients: form["edit-ingredients"].value.split(",").map(i=>i.trim()),
+    ingredients: form["edit-ingredients"].value.split(",").map(i=>i.trim()).filter(Boolean),
     description: form["edit-description"].value,
     image: form["edit-image"].value||"",
-    favorite: favoriteCheckbox.checked
+    favorite: favoriteCheckbox.checked,
+    gluten: editModalGluten.checked,
+    vege: editModalVege.checked,
+    grogros: editModalGrogros.checked
   };
 
   try {
@@ -234,5 +278,3 @@ loadRecipe();
 </script>
 </body>
 </html>
-
-
