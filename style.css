@@ -7,6 +7,7 @@ header { background:#ff7043; color:white; padding:20px; }
 
 .controls { display: flex; flex-direction: column; gap: 10px; }
 
+/* --- Recherche --- */
 .search-bar-container { display: flex; gap: 10px; width: 100%; }
 .search-wrapper { flex: 1; position: relative; }
 .search-wrapper input { padding: 10px 12px; border-radius: 6px; border: none; width: 100%; padding-right: 35px; font-size: 15px; }
@@ -15,6 +16,7 @@ header { background:#ff7043; color:white; padding:20px; }
 .clear-btn.show { opacity:1; pointer-events:auto; }
 .clear-btn:hover { background:#ff7043; }
 
+/* --- Filtres et tris --- */
 #filters, .sort-controls { display:flex; flex-direction:column; gap:8px; margin-top:10px; }
 
 .category-buttons, .favorite-button-container, .additional-filters {
@@ -40,9 +42,11 @@ header { background:#ff7043; color:white; padding:20px; }
   font-weight:bold;
 }
 
+/* --- Bouton ajout recette --- */
 #add-recipe-btn { position: absolute; top: 5px; right: 20px; padding: 10px 18px; background: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 3px 6px rgba(0,0,0,0.15); transition: background 0.3s, transform 0.2s; }
 #add-recipe-btn:hover { background: #45a049; transform: scale(1.05); }
 
+/* --- Cartes accueil --- */
 main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:20px; }
 
 .recipe-card { background:white; border-radius:10px; padding:0; overflow:hidden; position:relative; box-shadow:0 5px 15px rgba(0,0,0,0.1); transition:transform 0.3s, box-shadow 0.3s; cursor:pointer; }
@@ -62,7 +66,7 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
   color: gold;
 }
 
-/* --- Modal --- */
+/* --- Modals --- */
 .modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background:rgba(0,0,0,0.5); }
 .modal-content { background:white; margin:10% auto; padding:20px; border-radius:10px; width:90%; max-width:500px; position:relative; }
 .close-btn { position:absolute; right:15px; top:10px; font-size:25px; font-weight:bold; cursor:pointer; }
@@ -77,93 +81,26 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 .modal-favorite .favorite-icon { font-size:24px; color: grey; transition: color 0.3s; }
 .modal-favorite .favorite-icon.active { color: gold; }
 
-/* --- Detail page (recette.html) --- */
-.detail-card {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-  padding: 20px;
-  max-width: 1000px;
-  margin: 20px auto;
-  position: relative;
-}
+.modal-combi-filters { display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px; }
 
-.detail-card img {
-  width: 100%;
-  border-radius: 10px;
-  margin-bottom: 20px;
-}
+/* --- Page détail --- */
+.detail-page { max-width: 1000px; margin: 20px auto; padding: 20px; }
+.recipe-detail-card { background: white; border-radius: 12px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); position: relative; }
+.recipe-detail-card img { width: 100%; border-radius: 12px; margin-bottom: 20px; }
+.recipe-detail-card h2, .recipe-detail-card h3 { margin-top: 15px; }
 
-.detail-content h2 {
-  margin: 0 0 10px 0;
-  color: #333;
-}
+#back-btn { display: inline-block; margin-bottom: 20px; padding: 10px 18px; background: #ff7043; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 3px 6px rgba(0,0,0,0.15); transition: background 0.3s, transform 0.2s; }
+#back-btn:hover { background: #f4511e; transform: scale(1.05); }
 
-.detail-content h3 {
-  margin-top: 20px;
-  color: #ff7043;
-}
+.actions { display:flex; gap:10px; margin-top:20px; }
+.actions button { padding:10px 15px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; transition:0.3s; }
+#edit-btn { background:#ffb74d; color:white; }
+#edit-btn:hover { background:#ffa726; }
+#delete-btn { background:#e57373; color:white; }
+#delete-btn:hover { background:#f44336; }
 
-.actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.actions button, #back-btn {
-  padding: 10px 18px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-  transition: background 0.3s, transform 0.2s;
-}
-
-#back-btn {
-  background: #ff7043;
-  color: white;
-  margin-bottom: 20px;
-}
-
-#back-btn:hover {
-  background: #f4511e;
-  transform: scale(1.05);
-}
-
-#edit-btn {
-  background: #ffb74d;
-  color: white;
-}
-
-#edit-btn:hover {
-  background: #ffa726;
-  transform: scale(1.05);
-}
-
-#delete-btn {
-  background: #e57373;
-  color: white;
-}
-
-#delete-btn:hover {
-  background: #f44336;
-  transform: scale(1.05);
-}
-
-.favorite-icon {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  font-size: 26px;
-  color: grey;
-  cursor: pointer;
-  transition: color 0.3s;
-}
-
-.favorite-icon.active {
-  color: gold;
-}
+.recipe-detail-card .favorite-icon { position: absolute; top:10px; right:10px; font-size:28px; color: grey; transition: color 0.3s; }
+.recipe-detail-card .favorite-icon.active { color: gold; }
 
 /* --- Notification --- */
 #notification { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); padding: 12px 20px; border-radius: 6px; font-weight: bold; color: white; box-shadow: 0 3px 6px rgba(0,0,0,0.15); opacity: 0; pointer-events: none; transition: opacity 0.5s ease, top 0.5s ease; z-index: 2000; }
