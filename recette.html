@@ -1,280 +1,133 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Détails Recette</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Détail de la recette</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="notification" role="alert" aria-live="polite"></div>
-
-<div class="detail-page">
-  <button id="back-btn">← Retour</button>
-  <div style="position: relative;">
-    <img id="recipe-image" src="" alt="Photo de la recette" style="display:none;">
-    <span id="detail-favorite-icon" class="favorite-icon">★</span>
-  </div>
-  <h2 id="recipe-title"></h2>
-  <p><strong>Catégorie :</strong> <span id="recipe-category"></span></p>
-  <p><strong>Temps :</strong> <span id="recipe-time"></span></p>
-  <h3>Ingrédients :</h3>
-  <ul id="recipe-ingredients"></ul>
-  <h3>Description :</h3>
-  <p id="recipe-description"></p>
-
-  <div class="actions">
-    <button id="edit-btn">Modifier</button>
-    <button id="delete-btn">Supprimer</button>
-  </div>
-</div>
-
-<!-- Modal pour modifier la recette -->
-<div id="edit-recipe-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
-  <div class="modal-content">
-    <span class="close-btn" role="button" aria-label="Fermer la modale">&times;</span>
-    <h2 id="edit-modal-title">Modifier recette</h2>
-    <form id="edit-recipe-form">
-      <label for="edit-title">Titre</label>
-      <input type="text" id="edit-title" required>
-
-      <label for="edit-category">Catégorie</label>
-      <select id="edit-category" required>
-        <option value="Plat">Plats</option>
-        <option value="Dessert">Desserts</option>
-        <option value="Entrée">Entrées</option>
-        <option value="Snack">Snacks</option>
-        <option value="Cocktail">Cocktails</option>
-      </select>
-
-      <label for="edit-time">Temps</label>
-      <input type="text" id="edit-time" required>
-
-      <label for="edit-ingredients">Ingrédients (séparés par des virgules)</label>
-      <textarea id="edit-ingredients" required></textarea>
-
-      <label for="edit-description">Description</label>
-      <textarea id="edit-description" required></textarea>
-
-      <label for="edit-image">Image (URL, optionnelle)</label>
-      <input type="url" id="edit-image">
-
-      <div class="modal-favorite">
-        <span id="edit-modal-favorite-icon" class="favorite-icon">★</span>
-        <span>Favori</span>
-        <input type="checkbox" id="edit-favorite-checkbox" hidden>
-      </div>
-
-      <!-- Filtres combinatoires modal (édition) -->
-      <div class="modal-combi-filters">
-        <label><input type="checkbox" id="edit-modal-gluten"> Gluten free</label>
-        <label><input type="checkbox" id="edit-modal-vege"> Végé</label>
-        <label><input type="checkbox" id="edit-modal-grogros"> Grogros</label>
-      </div>
-
-      <button type="submit">Modifier</button>
-    </form>
-  </div>
-</div>
-
-<!-- Modal suppression -->
-<div id="delete-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="delete-title">
-  <div class="modal-content">
-    <h2 id="delete-title">Confirmer la suppression</h2>
-    <p>Voulez-vous vraiment supprimer cette recette ?</p>
-    <div class="actions">
-      <button id="cancel-delete">Annuler</button>
-      <button id="confirm-delete">Supprimer</button>
+  <header>
+    <div class="header-inner">
+      <h1>Détail de la recette</h1>
     </div>
-  </div>
-</div>
+  </header>
 
-<script>
-const API_URL = "https://mon-site-recette-backend.onrender.com/recipes";
-const params = new URLSearchParams(window.location.search);
-const id = params.get("id");
+  <main>
+    <div class="detail-card">
+      <button id="back-btn">← Retour</button>
+      <span class="favorite-icon" id="favorite-detail">★</span>
+      <img id="recipe-image" src="" alt="Image de la recette">
+      <div class="detail-content">
+        <h2 id="recipe-title"></h2>
+        <p><strong>Catégorie :</strong> <span id="recipe-category"></span></p>
+        <p><strong>Temps :</strong> <span id="recipe-time"></span></p>
+        <h3>Ingrédients</h3>
+        <ul id="recipe-ingredients"></ul>
+        <h3>Description</h3>
+        <p id="recipe-description"></p>
+      </div>
+      <div class="actions">
+        <button id="edit-btn">✏️ Modifier</button>
+        <button id="delete-btn">🗑 Supprimer</button>
+      </div>
+    </div>
+  </main>
 
-const backBtn = document.getElementById("back-btn");
-const modal = document.getElementById("edit-recipe-modal");
-const closeBtn = modal.querySelector(".close-btn");
-const form = document.getElementById("edit-recipe-form");
-const deleteModal = document.getElementById("delete-modal");
-const cancelDeleteBtn = document.getElementById("cancel-delete");
-const confirmDeleteBtn = document.getElementById("confirm-delete");
+  <div id="notification"></div>
 
-const favoriteIcon = document.getElementById("detail-favorite-icon");
-const modalFavoriteIcon = document.getElementById("edit-modal-favorite-icon");
-const favoriteCheckbox = document.getElementById("edit-favorite-checkbox");
+  <script>
+    const API_URL = "https://mon-site-recette-backend.onrender.com/recipes";
+    const params = new URLSearchParams(window.location.search);
+    const recipeId = params.get("id");
 
-// nouveaux checkboxes edition
-const editModalGluten = document.getElementById("edit-modal-gluten");
-const editModalVege = document.getElementById("edit-modal-vege");
-const editModalGrogros = document.getElementById("edit-modal-grogros");
+    const backBtn = document.getElementById("back-btn");
+    const favoriteIcon = document.getElementById("favorite-detail");
+    const notif = document.getElementById("notification");
 
-let recipe = null;
+    let recipe = null;
 
-// Notification
-function showNotification(message, type="success"){
-  const notif=document.getElementById("notification");
-  notif.textContent=message;
-  notif.className="";
-  notif.classList.add("show",type);
-  setTimeout(()=>notif.classList.remove("show"),3000);
-}
+    // --- Notification ---
+    function showNotification(message, type="success") {
+      notif.textContent = message;
+      notif.className = "";
+      notif.classList.add("show", type);
+      setTimeout(() => notif.classList.remove("show"), 3000);
+    }
 
-// fallback detection helpers (même logique que le front index)
-function detectGlutenFree(r){
-  if (typeof r.gluten === 'boolean') return r.gluten;
-  if (!Array.isArray(r.ingredients)) return false;
-  const txt = r.ingredients.join(" ").toLowerCase();
-  return !(/blé|farine|pâte|wheat|flour|orge|rye|seigle|barley/.test(txt));
-}
-function detectVege(r){
-  if (typeof r.vege === 'boolean') return r.vege;
-  if (!Array.isArray(r.ingredients)) return false;
-  const txt = r.ingredients.join(" ").toLowerCase();
-  return !(/viande|poulet|poisson|boeuf|porc|agneau|bacon|jambon|saucisse/.test(txt));
-}
-function detectGrogros(r){
-  if (typeof r.grogros === 'boolean') return r.grogros;
-  return Array.isArray(r.ingredients) && r.ingredients.length >= 8;
-}
+    // --- Charger la recette ---
+    async function loadRecipe() {
+      try {
+        const res = await fetch(`${API_URL}/${recipeId}`);
+        if (!res.ok) throw new Error("Recette introuvable");
+        recipe = await res.json();
+        populateDetail();
+      } catch (err) {
+        console.error(err);
+        window.location.href = "index.html";
+      }
+    }
 
-// Charger la recette
-async function loadRecipe() {
-  try {
-    const res = await fetch(`${API_URL}/${id}`);
-    if (!res.ok) throw new Error("Recette non trouvée");
-    recipe = await res.json();
-    populateDetail();
-  } catch(err) {
-    console.error(err);
-    window.location.href = "index.html";
-  }
-}
+    // --- Remplir les infos de la recette ---
+    function populateDetail() {
+      document.getElementById("recipe-title").textContent = recipe.title;
+      document.getElementById("recipe-category").textContent = recipe.category;
+      document.getElementById("recipe-time").textContent = recipe.time;
+      document.getElementById("recipe-description").innerHTML = recipe.description.replace(/\n/g,"<br>");
+      document.getElementById("recipe-ingredients").innerHTML =
+        Array.isArray(recipe.ingredients)
+          ? recipe.ingredients.map(i => `<li>${i}</li>`).join("")
+          : "";
 
-// Remplir la page
-function populateDetail(){
-  document.getElementById("recipe-title").textContent = recipe.title;
-  const imgEl = document.getElementById("recipe-image");
-  if(recipe.image){ 
-    imgEl.src=recipe.image; 
-    imgEl.style.display="block"; 
-    imgEl.alt=`Photo de ${recipe.title}`; 
-  } else imgEl.style.display="none";
-  document.getElementById("recipe-category").textContent = recipe.category;
-  document.getElementById("recipe-time").textContent = recipe.time;
-  document.getElementById("recipe-description").innerHTML = recipe.description.replace(/\n/g,"<br>");
-  document.getElementById("recipe-ingredients").innerHTML = Array.isArray(recipe.ingredients)? recipe.ingredients.map(i=>`<li>${i}</li>`).join("") : "";
+      const imgEl = document.getElementById("recipe-image");
+      if (recipe.image) {
+        imgEl.src = recipe.image;
+        imgEl.style.display = "block";
+        imgEl.alt = `Photo de ${recipe.title}`;
+      } else {
+        imgEl.style.display = "none";
+      }
 
-  // favoris
-  favoriteIcon.classList.toggle("active", recipe.favorite);
-  modalFavoriteIcon.classList.toggle("active", recipe.favorite);
-  favoriteCheckbox.checked = !!recipe.favorite;
+      favoriteIcon.classList.toggle("active", recipe.favorite);
+    }
 
-  // flags combinatoires (édition) -> si champ absent, on détecte depuis ingrédients
-  editModalGluten.checked = (typeof recipe.gluten === 'boolean') ? recipe.gluten : detectGlutenFree(recipe);
-  editModalVege.checked = (typeof recipe.vege === 'boolean') ? recipe.vege : detectVege(recipe);
-  editModalGrogros.checked = (typeof recipe.grogros === 'boolean') ? recipe.grogros : detectGrogros(recipe);
-}
+    // --- Retour accueil ---
+    backBtn.addEventListener("click", () => window.location.href = "index.html");
 
-// Retour
-backBtn.addEventListener("click", ()=>window.location.href="index.html");
-
-// Toggle favori page
-favoriteIcon.addEventListener("click", async ()=>{
-  try{
-    const res = await fetch(`${API_URL}/${recipe._id}/favorite`, { method: "PUT" });
-    const updated = await res.json();
-    recipe.favorite = updated.favorite;
-    favoriteIcon.classList.toggle("active", updated.favorite);
-    modalFavoriteIcon.classList.toggle("active", updated.favorite);
-    favoriteCheckbox.checked = updated.favorite;
-    showNotification(updated.favorite ? "Recette ajoutée aux favoris" : "Retirée des favoris", "success");
-  } catch(err){
-    console.error(err);
-    showNotification("Erreur lors du changement de favori","error");
-  }
-});
-
-// Toggle favori modal
-modalFavoriteIcon.addEventListener("click", ()=>{
-  modalFavoriteIcon.classList.toggle("active");
-  favoriteCheckbox.checked = modalFavoriteIcon.classList.contains("active");
-});
-
-// Supprimer
-document.getElementById("delete-btn").addEventListener("click",()=>{ deleteModal.style.display="block"; });
-cancelDeleteBtn.addEventListener("click",()=>{ deleteModal.style.display="none"; });
-window.addEventListener("click",(e)=>{ if(e.target===deleteModal) deleteModal.style.display="none"; });
-
-confirmDeleteBtn.addEventListener("click", async ()=>{
-  try {
-    await fetch(`${API_URL}/${recipe._id}`, { method: "DELETE" });
-    showNotification("Recette supprimée","error");
-    deleteModal.style.display="none";
-    setTimeout(()=>window.location.href="index.html",500);
-  } catch(err){
-    console.error(err);
-    showNotification("Erreur lors de la suppression","error");
-  }
-});
-
-// Modifier -> ouvrir modal et préremplir
-document.getElementById("edit-btn").addEventListener("click",()=>{
-  modal.style.display="block";
-  form["edit-title"].value = recipe.title;
-  form["edit-category"].value = recipe.category;
-  form["edit-time"].value = recipe.time;
-  form["edit-ingredients"].value = Array.isArray(recipe.ingredients)? recipe.ingredients.join(", "):"";
-  form["edit-description"].value = recipe.description;
-  form["edit-image"].value = recipe.image||"";
-  modalFavoriteIcon.classList.toggle("active", recipe.favorite);
-  favoriteCheckbox.checked = !!recipe.favorite;
-
-  // Préremplir les checkboxes d'édition
-  editModalGluten.checked = (typeof recipe.gluten === 'boolean') ? recipe.gluten : detectGlutenFree(recipe);
-  editModalVege.checked = (typeof recipe.vege === 'boolean') ? recipe.vege : detectVege(recipe);
-  editModalGrogros.checked = (typeof recipe.grogros === 'boolean') ? recipe.grogros : detectGrogros(recipe);
-});
-
-closeBtn.addEventListener("click",()=>modal.style.display="none");
-window.addEventListener("click",(e)=>{ if(e.target===modal) modal.style.display="none"; });
-
-// Submit modification
-form.addEventListener("submit", async (e)=>{
-  e.preventDefault();
-  const updatedRecipe = {
-    title: form["edit-title"].value,
-    category: form["edit-category"].value,
-    time: form["edit-time"].value,
-    ingredients: form["edit-ingredients"].value.split(",").map(i=>i.trim()).filter(Boolean),
-    description: form["edit-description"].value,
-    image: form["edit-image"].value||"",
-    favorite: favoriteCheckbox.checked,
-    gluten: editModalGluten.checked,
-    vege: editModalVege.checked,
-    grogros: editModalGrogros.checked
-  };
-
-  try {
-    const res = await fetch(`${API_URL}/${recipe._id}`, {
-      method: "PUT",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify(updatedRecipe)
+    // --- Favori ---
+    favoriteIcon.addEventListener("click", async () => {
+      try {
+        const res = await fetch(`${API_URL}/${recipe._id}/favorite`, { method: "PUT" });
+        const updated = await res.json();
+        recipe.favorite = updated.favorite;
+        favoriteIcon.classList.toggle("active", updated.favorite);
+        showNotification(updated.favorite ? "Ajoutée aux favoris" : "Retirée des favoris");
+      } catch (err) {
+        console.error(err);
+        showNotification("Erreur lors du changement de favori","error");
+      }
     });
-    recipe = await res.json();
-    populateDetail();
-    modal.style.display="none";
-    showNotification("Recette modifiée","warning");
-  } catch(err){
-    console.error(err);
-    showNotification("Erreur lors de la modification","error");
-  }
-});
 
-// Charger au démarrage
-loadRecipe();
-</script>
+    // --- Supprimer recette ---
+    document.getElementById("delete-btn").addEventListener("click", async () => {
+      if (!confirm("Voulez-vous vraiment supprimer cette recette ?")) return;
+      try {
+        await fetch(`${API_URL}/${recipe._id}`, { method: "DELETE" });
+        showNotification("Recette supprimée","error");
+        setTimeout(() => window.location.href = "index.html", 1000);
+      } catch (err) {
+        console.error(err);
+        showNotification("Erreur lors de la suppression","error");
+      }
+    });
+
+    // --- Modifier (redirige vers modal ou autre page si besoin) ---
+    document.getElementById("edit-btn").addEventListener("click", () => {
+      alert("Ouverture du modal de modification (à implémenter)");
+    });
+
+    // --- Au chargement ---
+    loadRecipe();
+  </script>
 </body>
 </html>
