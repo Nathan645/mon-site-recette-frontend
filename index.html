@@ -1,168 +1,93 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mes Recettes</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mes Recettes</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<div id="notification" role="alert" aria-live="polite"></div>
+  <header>
+    <div class="header-inner">
+      <h1>🍽️ Mes Recettes</h1>
 
-<header>
-  <div class="header-inner">
-    <h1>Mes Recettes</h1>
-    <button id="add-recipe-btn" aria-label="Ajouter une nouvelle recette">+ Nouvelle recette</button>
-
-    <div class="controls">
-      <!-- Barre de recherche -->
-      <div class="search-bar-container">
-        <div class="search-wrapper">
-          <input type="text" id="search-title" placeholder="Rechercher par titre..." aria-label="Rechercher par titre">
-          <button class="clear-btn" id="clear-title" aria-label="Effacer le titre"></button>
-        </div>
-        <div class="search-wrapper">
-          <input type="text" id="search-ingredient" placeholder="Rechercher par ingrédient..." aria-label="Rechercher par ingrédient">
-          <button class="clear-btn" id="clear-ingredient" aria-label="Effacer les ingrédients"></button>
-        </div>
-      </div>
-
-      <!-- Filtres de catégorie et favoris -->
-      <div id="filters">
-        <div class="category-buttons">
-          <button data-category="all" class="active">Toutes</button>
-          <button data-category="Plat">Plats</button>
-          <button data-category="Dessert">Desserts</button>
-          <button data-category="Entrée">Entrées</button>
-          <button data-category="Snack">Snacks</button>
-          <button data-category="Cocktail">Cocktails</button>
+      <div class="controls">
+        <!-- Barre de recherche -->
+        <div class="search-bar-container">
+          <div class="search-wrapper">
+            <input type="text" id="search-bar" placeholder="Rechercher une recette..." />
+            <button id="clear-search" class="clear-btn">×</button>
+          </div>
         </div>
 
-        <div class="favorite-button-container">
-          <button id="filter-favorite">Favoris</button>
+        <!-- Filtres -->
+        <div id="filters">
+          <div class="category-buttons">
+            <button data-category="Toutes" class="active">Toutes</button>
+            <button data-category="Entrée">Entrée</button>
+            <button data-category="Plat">Plat</button>
+            <button data-category="Dessert">Dessert</button>
+            <button data-category="Snack">Snack</button>
+            <button data-category="Cocktail">Cocktail</button>
+          </div>
+
+          <div class="favorite-and-tags">
+            <button id="filter-favorite">★ Favori</button>
+            <button id="filter-vege">🌱 Végé</button>
+            <button id="filter-gluten">🚫 Gluten Free</button>
+            <button id="filter-grogros">🍲 Grogros</button>
+          </div>
         </div>
 
-        <div class="additional-filters">
-          <button class="combi-filter" data-filter="gluten">Gluten free</button>
-          <button class="combi-filter" data-filter="vege">Végé</button>
-          <button class="combi-filter" data-filter="grogros">Grogros</button>
+        <!-- Tri -->
+        <div class="sort-controls">
+          <button class="sort-btn" data-sort="alpha">Trier A-Z</button>
+          <button class="sort-btn" data-sort="time">Trier par temps</button>
+          <button class="sort-btn" data-sort="recent">Plus récentes</button>
         </div>
       </div>
 
-      <!-- Boutons de tri -->
-      <div class="sort-controls">
-        <button data-sort="asc" class="sort-btn active">A→Z</button>
-        <button data-sort="desc" class="sort-btn">Z→A</button>
-        <button data-sort="newest" class="sort-btn">Plus récente</button>
-        <button data-sort="oldest" class="sort-btn">Plus ancienne</button>
-      </div>
+      <button id="add-recipe-btn">+ Ajouter une recette</button>
     </div>
+  </header>
 
-    <p id="recipe-count"></p>
+  <main id="recipe-list"></main>
+
+  <div id="pagination"></div>
+
+  <!-- Modals -->
+  <div id="add-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn">&times;</span>
+      <h2>Ajouter une recette</h2>
+      <form id="add-form">
+        <input type="text" id="title" placeholder="Titre" required />
+        <select id="category" required>
+          <option value="Plat">Plat</option>
+          <option value="Entrée">Entrée</option>
+          <option value="Dessert">Dessert</option>
+          <option value="Snack">Snack</option>
+          <option value="Cocktail">Cocktail</option>
+        </select>
+        <input type="text" id="time" placeholder="Temps de préparation" required />
+        <textarea id="ingredients" placeholder="Ingrédients (séparés par des virgules)" required></textarea>
+        <textarea id="description" placeholder="Description" required></textarea>
+        <input type="text" id="image" placeholder="URL de l'image" />
+
+        <div class="modal-filters">
+          <label><input type="checkbox" id="favorite"> Favori</label>
+          <label><input type="checkbox" id="vege"> Végé</label>
+          <label><input type="checkbox" id="gluten"> Gluten Free</label>
+          <label><input type="checkbox" id="grogros"> Grogros</label>
+        </div>
+
+        <button type="submit">Enregistrer</button>
+      </form>
+    </div>
   </div>
-</header>
 
-<main id="recipes-container"></main>
+  <div id="notification"></div>
 
-<!-- Pagination -->
-<div id="pagination"></div>
-
-<!-- Modal pour ajouter une recette -->
-<div id="recipe-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-  <div class="modal-content">
-    <span class="close-btn" role="button" aria-label="Fermer la modale">&times;</span>
-    <h2 id="modal-title">Nouvelle recette</h2>
-    <form id="recipe-form">
-      <label for="title">Titre</label>
-      <input type="text" id="title" required>
-
-      <label for="category">Catégorie</label>
-      <select id="category" required>
-        <option value="Plat">Plats</option>
-        <option value="Dessert">Desserts</option>
-        <option value="Entrée">Entrées</option>
-        <option value="Snack">Snacks</option>
-        <option value="Cocktail">Cocktails</option>
-      </select>
-
-      <label for="time">Temps</label>
-      <input type="text" id="time" required>
-
-      <label for="ingredients">Ingrédients (séparés par des virgules)</label>
-      <textarea id="ingredients" required></textarea>
-
-      <label for="description">Description</label>
-      <textarea id="description" required></textarea>
-
-      <label for="image">Image (URL, optionnelle)</label>
-      <input type="url" id="image" placeholder="https://exemple.com/image.jpg">
-
-      <div class="modal-favorite">
-        <span id="modal-favorite-icon" class="favorite-icon">★</span>
-        <span>Favori</span>
-        <input type="checkbox" id="favorite-checkbox" hidden>
-      </div>
-
-      <!-- Filtres combinatoires modal -->
-      <div class="modal-combi-filters">
-        <label><input type="checkbox" id="modal-gluten"> Gluten free</label>
-        <label><input type="checkbox" id="modal-vege"> Végé</label>
-        <label><input type="checkbox" id="modal-grogros"> Grogros</label>
-      </div>
-
-      <button type="submit">Ajouter</button>
-    </form>
-  </div>
-</div>
-
-<!-- Modal modification -->
-<div id="edit-recipe-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
-  <div class="modal-content">
-    <span class="close-btn" role="button" aria-label="Fermer la modale">&times;</span>
-    <h2 id="edit-modal-title">Modifier recette</h2>
-    <form id="edit-recipe-form">
-      <label for="edit-title">Titre</label>
-      <input type="text" id="edit-title" required>
-
-      <label for="edit-category">Catégorie</label>
-      <select id="edit-category" required>
-        <option value="Plat">Plats</option>
-        <option value="Dessert">Desserts</option>
-        <option value="Entrée">Entrées</option>
-        <option value="Snack">Snacks</option>
-        <option value="Cocktail">Cocktails</option>
-      </select>
-
-      <label for="edit-time">Temps</label>
-      <input type="text" id="edit-time" required>
-
-      <label for="edit-ingredients">Ingrédients (séparés par des virgules)</label>
-      <textarea id="edit-ingredients" required></textarea>
-
-      <label for="edit-description">Description</label>
-      <textarea id="edit-description" required></textarea>
-
-      <label for="edit-image">Image (URL, optionnelle)</label>
-      <input type="url" id="edit-image">
-
-      <div class="modal-favorite">
-        <span id="edit-modal-favorite-icon" class="favorite-icon">★</span>
-        <span>Favori</span>
-        <input type="checkbox" id="edit-favorite-checkbox" hidden>
-      </div>
-
-      <!-- Filtres combinatoires modal -->
-      <div class="modal-combi-filters">
-        <label><input type="checkbox" id="edit-modal-gluten"> Gluten free</label>
-        <label><input type="checkbox" id="edit-modal-vege"> Végé</label>
-        <label><input type="checkbox" id="edit-modal-grogros"> Grogros</label>
-      </div>
-
-      <button type="submit">Modifier</button>
-    </form>
-  </div>
-</div>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
