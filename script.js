@@ -18,6 +18,7 @@ const favoriteCheckbox = document.getElementById("favorite-checkbox");
 
 let allRecipes = [];
 
+
 // ---------------- Notification ----------------
 function showNotification(message, type="success") {
   notif.textContent = message;
