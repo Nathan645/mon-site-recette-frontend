@@ -5,9 +5,8 @@ body { font-family: Arial, sans-serif; margin:0; background:#f6f6f6; }
 header { background:#ff7043; color:white; padding:20px; }
 .header-inner { max-width: 1000px; margin: 0 auto; position: relative; }
 
-.controls { display: flex; flex-direction: column; gap: 12px; }
+.controls { display: flex; flex-direction: column; gap: 10px; }
 
-/* --- Recherche --- */
 .search-bar-container { display: flex; gap: 10px; width: 100%; }
 .search-wrapper { flex: 1; position: relative; }
 .search-wrapper input { padding: 10px 12px; border-radius: 6px; border: none; width: 100%; padding-right: 35px; font-size: 15px; }
@@ -16,59 +15,34 @@ header { background:#ff7043; color:white; padding:20px; }
 .clear-btn.show { opacity:1; pointer-events:auto; }
 .clear-btn:hover { background:#ff7043; }
 
-/* --- Filtres --- */
-#filters { display:flex; flex-direction:column; gap:10px; margin-top:10px; }
+#filters, .sort-controls { display:flex; flex-direction:column; gap:8px; margin-top:10px; }
 
-.category-buttons, .favorite-and-tags {
+.category-buttons, .favorite-button-container, .additional-filters {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-#filters button, .sort-controls .sort-btn {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 5px;
-  background: rgba(255,255,255,0.2);
-  color: white;
-  cursor: pointer;
-  transition: 0.3s;
-  font-size: 14px;
-  min-width: 100px;
-  text-align: center;
+#filters button, .sort-controls .sort-btn, #filter-favorite, .additional-filters button {
+  padding:10px 14px;
+  border:none;
+  border-radius:5px;
+  background:rgba(255,255,255,0.2);
+  color:white;
+  cursor:pointer;
+  transition:0.3s;
+  font-size:15px;
 }
 
-#filters button.active, .sort-controls .sort-btn.active {
-  background: white;
-  color: #ff7043;
-  font-weight: bold;
+#filters button.active, .sort-controls .sort-btn.active, #filter-favorite.active, .additional-filters button.active {
+  background:white;
+  color:#ff7043;
+  font-weight:bold;
 }
 
-/* --- Tri --- */
-.sort-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-/* --- Bouton ajout recette --- */
-#add-recipe-btn {
-  position: absolute;
-  top: 5px;
-  right: 20px;
-  padding: 10px 18px;
-  background: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-  transition: background 0.3s, transform 0.2s;
-}
+#add-recipe-btn { position: absolute; top: 5px; right: 20px; padding: 10px 18px; background: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 3px 6px rgba(0,0,0,0.15); transition: background 0.3s, transform 0.2s; }
 #add-recipe-btn:hover { background: #45a049; transform: scale(1.05); }
 
-/* --- Cartes accueil --- */
 main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:20px; }
 
 .recipe-card { background:white; border-radius:10px; padding:0; overflow:hidden; position:relative; box-shadow:0 5px 15px rgba(0,0,0,0.1); transition:transform 0.3s, box-shadow 0.3s; cursor:pointer; }
@@ -88,7 +62,7 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
   color: gold;
 }
 
-/* --- Modals --- */
+/* --- Modal --- */
 .modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background:rgba(0,0,0,0.5); }
 .modal-content { background:white; margin:10% auto; padding:20px; border-radius:10px; width:90%; max-width:500px; position:relative; }
 .close-btn { position:absolute; right:15px; top:10px; font-size:25px; font-weight:bold; cursor:pointer; }
@@ -99,7 +73,97 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 .modal-content form button { padding:10px 15px; border:none; background:#4CAF50; color:white; border-radius:5px; cursor:pointer; }
 .modal-content form button:hover { background:#45a049; }
 
-.modal-filters { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:15px; }
+.modal-favorite { display:flex; align-items:center; gap:10px; margin-bottom:15px; cursor:pointer; }
+.modal-favorite .favorite-icon { font-size:24px; color: grey; transition: color 0.3s; }
+.modal-favorite .favorite-icon.active { color: gold; }
+
+/* --- Detail page (recette.html) --- */
+.detail-card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  padding: 20px;
+  max-width: 1000px;
+  margin: 20px auto;
+  position: relative;
+}
+
+.detail-card img {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.detail-content h2 {
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.detail-content h3 {
+  margin-top: 20px;
+  color: #ff7043;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.actions button, #back-btn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+  transition: background 0.3s, transform 0.2s;
+}
+
+#back-btn {
+  background: #ff7043;
+  color: white;
+  margin-bottom: 20px;
+}
+
+#back-btn:hover {
+  background: #f4511e;
+  transform: scale(1.05);
+}
+
+#edit-btn {
+  background: #ffb74d;
+  color: white;
+}
+
+#edit-btn:hover {
+  background: #ffa726;
+  transform: scale(1.05);
+}
+
+#delete-btn {
+  background: #e57373;
+  color: white;
+}
+
+#delete-btn:hover {
+  background: #f44336;
+  transform: scale(1.05);
+}
+
+.favorite-icon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 26px;
+  color: grey;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.favorite-icon.active {
+  color: gold;
+}
 
 /* --- Notification --- */
 #notification { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); padding: 12px 20px; border-radius: 6px; font-weight: bold; color: white; box-shadow: 0 3px 6px rgba(0,0,0,0.15); opacity: 0; pointer-events: none; transition: opacity 0.5s ease, top 0.5s ease; z-index: 2000; }
@@ -107,6 +171,13 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 #notification.success { background: #4CAF50; }
 #notification.warning { background: #ff9800; }
 #notification.error { background: #f44336; }
+
+/* --- Modal suppression --- */
+#delete-modal .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+#cancel-delete { background: #ccc; color: black; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; }
+#cancel-delete:hover { background: #bbb; }
+#confirm-delete { background: #e57373; color: white; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; }
+#confirm-delete:hover { background: #f44336; }
 
 /* --- Pagination --- */
 #pagination {
@@ -139,3 +210,4 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
   font-weight: bold;
   box-shadow: 0 3px 6px rgba(0,0,0,0.15);
 }
+
