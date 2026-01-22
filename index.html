@@ -1,71 +1,26 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mes Recettes</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <div class="header-inner">
-      <h1>🍽️ Mes Recettes</h1>
-
-      <div class="controls">
-        <!-- Barre de recherche -->
-        <div class="search-bar-container">
-          <div class="search-wrapper">
-            <input type="text" id="search-title" placeholder="Rechercher une recette..." />
-            <button id="clear-title" class="clear-btn">×</button>
-          </div>
-          <div class="search-wrapper">
-            <input type="text" id="search-ingredient" placeholder="Filtrer par ingrédient..." />
-            <button id="clear-ingredient" class="clear-btn">×</button>
-          </div>
-        </div>
-
-        <!-- Filtres -->
-        <div id="filters">
-          <div class="category-buttons">
-            <button data-category="all" class="active">Toutes</button>
-            <button data-category="Entrée">Entrée</button>
-            <button data-category="Plat">Plat</button>
-            <button data-category="Dessert">Dessert</button>
-            <button data-category="Snack">Snack</button>
-            <button data-category="Cocktail">Cocktail</button>
-          </div>
-
-          <div class="favorite-and-tags">
-            <button id="filter-favorite">★ Favori</button>
-            <button class="combi-filter" data-filter="vege">🌱 Végé</button>
-            <button class="combi-filter" data-filter="gluten">🚫 Gluten Free</button>
-            <button class="combi-filter" data-filter="grogros">🍲 Grogros</button>
-          </div>
-        </div>
-
-        <!-- Tri -->
-        <div class="sort-controls">
-          <button class="sort-btn" data-sort="asc">Trier A-Z</button>
-          <button class="sort-btn" data-sort="desc">Trier Z-A</button>
-          <button class="sort-btn" data-sort="newest">Plus récentes</button>
-          <button class="sort-btn" data-sort="oldest">Plus anciennes</button>
-        </div>
-      </div>
-
-      <button id="add-recipe-btn">+ Ajouter une recette</button>
-    </div>
+    <h1>🍽️ Mes Recettes</h1>
+    <button id="add-recipe-btn">+ Ajouter une recette</button>
   </header>
 
   <main id="recipe-list"></main>
-  <div id="pagination"></div>
 
-  <!-- Modal ajout recette -->
+  <!-- Modal Ajouter Recette -->
   <div id="add-modal" class="modal">
     <div class="modal-content">
-      <span class="close-btn">&times;</span>
+      <span id="close-modal" class="close-btn">&times;</span>
       <h2>Ajouter une recette</h2>
       <form id="add-form">
-        <input type="text" id="title" placeholder="Titre" required />
+        <input type="text" id="title" placeholder="Titre" required>
         <select id="category" required>
           <option value="Plat">Plat</option>
           <option value="Entrée">Entrée</option>
@@ -73,18 +28,11 @@
           <option value="Snack">Snack</option>
           <option value="Cocktail">Cocktail</option>
         </select>
-        <input type="text" id="time" placeholder="Temps de préparation" required />
+        <input type="text" id="time" placeholder="Temps de préparation" required>
         <textarea id="ingredients" placeholder="Ingrédients (séparés par des virgules)" required></textarea>
         <textarea id="description" placeholder="Description" required></textarea>
-        <input type="text" id="image" placeholder="URL de l'image" />
-
-        <div class="modal-filters">
-          <label><input type="checkbox" id="favorite-checkbox"> Favori</label>
-          <label><input type="checkbox" id="modal-vege"> Végé</label>
-          <label><input type="checkbox" id="modal-gluten"> Gluten Free</label>
-          <label><input type="checkbox" id="modal-grogros"> Grogros</label>
-        </div>
-
+        <input type="text" id="image" placeholder="URL de l'image">
+        <label><input type="checkbox" id="favorite-checkbox"> Favori</label>
         <button type="submit">Enregistrer</button>
       </form>
     </div>
