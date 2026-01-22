@@ -1,4 +1,4 @@
-const API_URL = "https://mon-site-recette-backend.onrender.com";
+const API_URL = "https://mon-site-recette-backend.onrender.com/recipes";
 
 // DOM Elements
 const recipeList = document.getElementById("recipe-list");
