@@ -73,19 +73,36 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 .modal-content form button { padding:10px 15px; border:none; background:#4CAF50; color:white; border-radius:5px; cursor:pointer; }
 .modal-content form button:hover { background:#45a049; }
 
-.modal-favorite { display:flex; align-items:center; gap:10px; margin-bottom:15px; cursor:pointer; }
-.modal-favorite .favorite-icon { font-size:24px; color: grey; transition: color 0.3s; }
-.modal-favorite .favorite-icon.active { color: gold; }
+/* --- Options horizontales --- */
+.horizontal-filters {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+  align-items: center;
+}
+
+.horizontal-filters.no-bold label,
+.additional-filters.horizontal-filters button {
+  font-weight: normal;
+}
+
+.horizontal-filters label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
 
 /* --- Detail page (recette.html) --- */
 .detail-card {
   background: white;
-  border-radius: 0;
-  box-shadow: none;
-  padding: 30px;
-  max-width: 100%;
-  margin: 0;
-  min-height: calc(100vh - 120px);
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  padding: 20px;
+  max-width: 1000px;
+  margin: 20px auto;
+  position: relative;
 }
 
 .detail-card img {
@@ -102,16 +119,6 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 .detail-content h3 {
   margin-top: 20px;
   color: #ff7043;
-}
-
-.detail-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.detail-card img {
-  max-height: 500px;
-  object-fit: cover;
 }
 
 .actions {
@@ -182,13 +189,6 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
 #notification.warning { background: #ff9800; }
 #notification.error { background: #f44336; }
 
-/* --- Modal suppression --- */
-#delete-modal .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-#cancel-delete { background: #ccc; color: black; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; }
-#cancel-delete:hover { background: #bbb; }
-#confirm-delete { background: #e57373; color: white; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; }
-#confirm-delete:hover { background: #f44336; }
-
 /* --- Pagination --- */
 #pagination {
   display: flex;
@@ -220,45 +220,3 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
   font-weight: bold;
   box-shadow: 0 3px 6px rgba(0,0,0,0.15);
 }
-
-/* --- Options modal (favori / végé / grogros) --- */
-.modal-options {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 20px;
-  align-items: center;
-}
-
-.modal-options label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.modal-options input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-}
-
-/* --- Options horizontales pour modal et filtres --- */
-.horizontal-filters {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-  margin-bottom: 15px;
-  align-items: center;
-}
-.horizontal-filters label {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  cursor: pointer;
-}
-.horizontal-filters.no-bold label {
-  font-weight: normal;
-}
-
-
