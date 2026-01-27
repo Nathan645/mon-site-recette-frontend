@@ -255,7 +255,10 @@ main { max-width:1000px; margin:20px auto; padding:0 20px; display:grid; grid-te
   display: flex;
   align-items: center;
   gap: 5px;
-  font-weight: bold;
   cursor: pointer;
 }
+.horizontal-filters.no-bold label {
+  font-weight: normal;
+}
+
 
